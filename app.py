@@ -297,18 +297,17 @@ sms_toggle = st.sidebar.checkbox("Live Dispatch Mode", value=False)
 
 # --- LEDGER CALCULATIONS ---
 conn = get_db_connection()
+df_m = pd.read_sql_query("SELECT * FROM members", conn)
 
-# 1. Fetch group-specific totals for the Dashboard
-def get_group_stats(group_name):
-    req = conn.execute("SELECT SUM(levy_amount) FROM funerals WHERE group_name = ?", (group_name,)).fetchone()[0] or 0.0
-    paid = conn.execute("""
-        SELECT SUM(c.amount_paid) 
-        FROM contributions c 
-        JOIN members m ON c.member_code = m.member_code 
-        WHERE m.member_group = ?
-    """, (group_name,)).fetchone()[0] or 0.0
-    count = conn.execute("SELECT COUNT(*) FROM funerals WHERE group_name = ?", (group_name,)).fetchone()[0] or 0
-    return req, paid, count
+# 1. Total individual assessment levy sum (the baseline total EVERY single individual member owes)
+total_req_levy = conn.execute("SELECT SUM(levy_amount) FROM funerals").fetchone()[0] or 0.0
+
+# 2. Total paid across the whole system
+total_paid_ledger = conn.execute("SELECT SUM(amount_paid) FROM contributions").fetchone()[0] or 0.0
+
+funeral_count = conn.execute("SELECT COUNT(*) FROM funerals").fetchone()[0] or 0
+member_count = len(df_m)
+conn.close()
 
 # 2. Get data for both groups
 adom_req, adom_paid, adom_count = get_group_stats("Adom")
