@@ -373,12 +373,22 @@ with tabs[0]:
 if st.session_state['role'] == "Admin":
     # TAB 2: ROSTER WORKBOOK INGESTION
     with tabs[1]:
-        st.markdown("<div class='premium card'><h3>Synchronize Roster Workbook</h3>", unsafe_allow_html=True)
-        
-        # 1. Select group before uploading
-        upload_group = st.radio("Which Roster group are you uploading?", ["Adom", "Second Chance"], horizontal=True)
-        
-        uploaded_file = st.file_uploader(f"Upload {upload_group} Excel Spreadsheet (.xlsx)", type=["xlsx"])
+            st.markdown("<div class='premium-card'><h3>👥 Roster Synchronization Desk</h3></div>", unsafe_allow_html=True)
+            
+            # Selectors for Group and Branch tracking
+            col_grp, col_br = st.columns(2)
+            with col_grp:
+                upload_group = st.selectbox("🎯 Target Allocation Group", ["Adom", "Second Chance"])
+            with col_br:
+                upload_branch = st.selectbox("🏢 Originating Data Branch", [
+                    "NUNGUA MAIN (Mother)", 
+                    "LASHIBI", 
+                    "TESHIE", 
+                    "LABADI", 
+                    "BURMA CAMP"
+                ])
+                
+            uploaded_file = st.file_uploader(f"Upload {upload_group} Excel Spreadsheet ({upload_branch})", type=["xlsx"])
         
         if uploaded_file is not None:
             try:
