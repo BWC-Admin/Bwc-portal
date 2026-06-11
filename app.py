@@ -169,7 +169,7 @@ if not st.session_state['logged_in']:
             
             if submit_login:
                 # 📝 MANAGE/CHANGE SYSTEM CREDENTIALS RIGHT HERE:
-                if username.lower() in ["admin1", "admin2"] and password == "bwcadmin123":
+                if username.lower() in ["admin1", "admin2"] and password == "2000@Philip@19":
                     st.session_state['logged_in'] = True
                     st.session_state['role'] = "Admin"
                     st.rerun()
