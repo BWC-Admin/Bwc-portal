@@ -406,7 +406,7 @@ if st.session_state['role'] == "Admin":
         if not df_funerals.empty:
             for idx, row in df_funerals.iterrows():
                 col_name, col_levy, col_action = st.columns([3, 1, 1])
-                col_name.write(f"🏷️ **{row['funeral_name']}**")
+                col_name.write(f"🏷️ **{row['group_name']}**: {row['funeral_name']}")
                 col_levy.write(f"GH₵ {row['levy_amount']:,.2f}")
                 
                 if col_action.button("🗑️ Void Profile", key=f"del_{row['id']}", use_container_width=True):
