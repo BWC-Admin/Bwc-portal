@@ -275,11 +275,13 @@ with tabs[0]:
         member_row = df_m[df_m['dropdown_label'] == selected_profile].iloc[0]
         m_code, m_name, m_phone = member_row['member_code'], member_row['member_name'], member_row['phone_number']
         
-        conn = get_db_connection()
-        already_paid = conn.execute("SELECT SUM(amount_paid) FROM contributions WHERE member_code = ?", (m_code,)).fetchone()[0] or 0.0
-        conn.close()
-        
-        current_balance = total_req_levy - already_paid
+conn = get_db_connection()
+# Convert m_code cleanly to string and remove spaces to prevent database matching misses
+clean_code = str(m_code).strip()
+already_paid = conn.execute("SELECT SUM(amount_paid) FROM contributions WHERE TRIM(CAST(member_code AS TEXT)) = ?", (clean_code,)).fetchone()[0] or 0.0
+conn.close()
+
+current_balance = float(total_req_levy) - float(already_paid)
         
         mc1, mc2, mc3 = st.columns(3)
         st.markdown(f"**Cumulative Assessment Owed:** GH₵ {total_req_levy:,.2f}")
