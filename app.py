@@ -399,23 +399,23 @@ if st.session_state['role'] == "Admin":
     with tabs[2]:
         st.markdown("<div class='premium-card'><h3>Active Philadelphia Case Profiles</h3>", unsafe_allow_html=True)
         conn = get_db_connection()
-    # Updated query to include group_name
-    df_funerals = pd.read_sql_query("SELECT id, funeral_name, levy_amount, group_name FROM funerals ORDER BY id DESC", conn)
-    conn.close()
-        
+        df_funerals = pd.read_sql_query("SELECT id, funeral_name, levy_amount, group_name FROM funerals ORDER BY id DESC", conn)
+        conn.close()
+
         if not df_funerals.empty:
             for idx, row in df_funerals.iterrows():
                 col_name, col_levy, col_action = st.columns([3, 1, 1])
                 col_name.write(f"🏷️ **{row['group_name']}**: {row['funeral_name']}")
-                col_levy.write(f"GH₵ {row['levy_amount']:,.2f}")
+                col_levy.write(f"GHS {row['levy_amount']:.2f}")
                 
                 if col_action.button("🗑️ Void Profile", key=f"del_{row['id']}", use_container_width=True):
                     conn = get_db_connection()
                     conn.execute("DELETE FROM funerals WHERE id = ?", (row['id'],))
-                    conn.commit(); conn.close()
+                    conn.commit()
+                    conn.close()
                     st.success("Profile safely removed from ledger indexes.")
                     st.rerun()
-                st.markdown("<hr style='margin:10px 0; border:0; border-top:1px solid #f1f5f9;'>", unsafe_allow_html=True)
+            st.markdown("<hr style='margin:10px 0; border:0; border-top:1px solid #f1f5f9;'>", unsafe_allow_html=True)
         else:
             st.info("No active profiles tracked inside the database index.")
         st.markdown("</div>", unsafe_allow_html=True)
