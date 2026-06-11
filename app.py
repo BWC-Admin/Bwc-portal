@@ -389,8 +389,8 @@ if st.session_state['role'] == "Admin":
                 ])
                 
             uploaded_file = st.file_uploader(f"Upload {upload_group} Excel Spreadsheet ({upload_branch})", type=["xlsx"])
-        
-        if uploaded_file is not None:
+            
+            if uploaded_file is not None:
             try:
                 df_upload = pd.read_excel(uploaded_file)
                 df_upload.columns = [str(c).strip().lower().replace(" ", "_") for c in df_upload.columns]
