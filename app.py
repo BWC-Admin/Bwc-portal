@@ -239,8 +239,13 @@ sms_toggle = st.sidebar.checkbox("Live Dispatch Mode", value=False)
 # --- LEDGER CALCULATIONS ---
 conn = get_db_connection()
 df_m = pd.read_sql_query("SELECT * FROM members", conn)
+
+# 1. Total individual assessment levy sum (the baseline total EVERY single individual member owes)
 total_req_levy = conn.execute("SELECT SUM(levy_amount) FROM funerals").fetchone()[0] or 0.0
+
+# 2. Total paid across the whole system
 total_paid_ledger = conn.execute("SELECT SUM(amount_paid) FROM contributions").fetchone()[0] or 0.0
+
 funeral_count = conn.execute("SELECT COUNT(*) FROM funerals").fetchone()[0] or 0
 member_count = len(df_m)
 conn.close()
