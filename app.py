@@ -393,7 +393,11 @@ if st.session_state['role'] == "Admin":
             if uploaded_file is not None:
                 try:
                     df_upload = pd.read_excel(uploaded_file)
+                    
+                    # Clean column names (handles spaces and casing)
                     df_upload.columns = [str(c).strip().lower().replace(" ", "_") for c in df_upload.columns]
+                    
+                    # Rename columns to match your database exactly
                     df_upload = df_upload.rename(columns={
                         'member_id': 'member_code', 
                         'id': 'member_code', 
@@ -402,29 +406,28 @@ if st.session_state['role'] == "Admin":
                         'phone': 'phone_number', 
                         'phone_no': 'phone_number'
                     })
-                
-                # 2. Tag every member in this file with the selected group
-                df_upload['member_group'] = upload_group
-                
-                conn = get_db_connection()
-                
-                # 3. Merge new members with existing ones from other groups
-                try:
-                    existing_df = pd.read_sql("SELECT * FROM members", conn)
-                    # Remove old records only for the group being uploaded right now
-                    existing_df = existing_df[existing_df['member_group'] != upload_group]
-                    df_final = pd.concat([existing_df, df_upload[['member_code', 'member_name', 'phone_number', 'member_group']]], ignore_index=True)
-                except Exception:
-                    df_final = df_upload[['member_code', 'member_name', 'phone_number', 'member_group']]
-                
-                df_final.to_sql('members', conn, if_exists='replace', index=False)
-                conn.close()
-                
-                st.success(f"{upload_group} Roster synchronized and indexed perfectly!")
-                st.rerun()
-            except Exception as e:
-                st.error(f"Spreadsheet compilation error: {e}")
-        st.markdown("</div>", unsafe_allow_html=True)
+                    
+                    # Tag every member in this file with the selected group and branch
+                    df_upload['member_group'] = upload_group
+                    df_upload['branch_name'] = upload_branch
+                    
+                    conn = get_db_connection()
+                    
+                    # Remove only the existing records for THIS branch and THIS group to avoid duplicates
+                    conn.execute("DELETE FROM members WHERE member_group = ? AND branch_name = ?", (upload_group, upload_branch))
+                    
+                    # Save the new data
+                    df_upload.to_sql("members", conn, if_exists="append", index=False)
+                    conn.commit()
+                    conn.close()
+                    
+                    st.success(f"🟢 {upload_group} roster for {upload_branch} synchronized perfectly!")
+                    st.rerun()
+                    
+                except Exception as e:
+                    st.error(f"🔴 Spreadsheet compilation error: {e}")
+            
+            st.markdown("</div>", unsafe_allow_html=True)
 
     # TAB 3: FUNERAL CASE MANAGEMENT (EDIT/DELETE DESK)
     with tabs[2]:
