@@ -249,13 +249,23 @@ if st.session_state['role'] == "Admin":
     st.sidebar.markdown("<br><h3 style='font-size:14px; color:#d4af37;'>⚙️ LEDGER CONTROL TOWER</h3>", unsafe_allow_html=True)
     with st.sidebar.expander("➕ Register Funeral Ledger Case", expanded=True):
         with st.form("funeral_form", clear_on_submit=True):
-            fun_name = st.text_input("Deceased Member Description")
-            fun_levy = st.number_input("Assessment Levy (GH₵)", min_value=0.0, format="%.2f")
-            if st.form_submit_button("Publish Case"):
-                if fun_name:
-                    conn = get_db_connection()
-                    conn.execute("INSERT INTO funerals (funeral_name, levy_amount) VALUES (?, ?)", (fun_name, fun_levy))
-                    conn.commit(); conn.close(); st.rerun()
+                fun_name = st.text_input("Deceased Member Description")
+                fun_levy = st.number_input("Assessment Levy (GHS)", min_value=0.0, format="%.2f")
+                
+                # This dropdown allows you to separate Adom and Second Chance
+                fun_group = st.selectbox("Assign to Group", ["Adom", "Second Chance"])
+                
+                if st.form_submit_button("Publish Case"):
+                    if fun_name:
+                        conn = get_db_connection()
+                        # This saves the funeral name, amount, and the group selection
+                        conn.execute(
+                            "INSERT INTO funerals (funeral_name, levy_amount, group_name) VALUES (?, ?, ?)",
+                            (fun_name, fun_levy, fun_group)
+                        )
+                        conn.commit()
+                        conn.close()
+                        st.rerun()
 
 st.sidebar.markdown("<br><h3 style='font-size:14px; color:#d4af37;'>🔱 ARKESEL TRANSMISSION ENGINE</h3>", unsafe_allow_html=True)
 default_key = st.secrets.get("ARKESEL_API_KEY", "")
