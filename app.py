@@ -392,12 +392,16 @@ if st.session_state['role'] == "Admin":
             
             if uploaded_file is not None:
                 try:
-                df_upload = pd.read_excel(uploaded_file)
-                df_upload.columns = [str(c).strip().lower().replace(" ", "_") for c in df_upload.columns]
-                df_upload = df_upload.rename(columns={
-                    'member_id': 'member_code', 'id': 'member_code', 'code': 'member_code',
-                    'name': 'member_name', 'phone': 'phone_number', 'phone_no': 'phone_number'
-                })
+                    df_upload = pd.read_excel(uploaded_file)
+                    df_upload.columns = [str(c).strip().lower().replace(" ", "_") for c in df_upload.columns]
+                    df_upload = df_upload.rename(columns={
+                        'member_id': 'member_code', 
+                        'id': 'member_code', 
+                        'code': 'member_code',
+                        'name': 'member_name', 
+                        'phone': 'phone_number', 
+                        'phone_no': 'phone_number'
+                    })
                 
                 # 2. Tag every member in this file with the selected group
                 df_upload['member_group'] = upload_group
