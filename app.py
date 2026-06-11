@@ -442,17 +442,49 @@ if st.session_state['role'] == "Admin":
         st.markdown("<div class='premium-card'><h3>Master Ledger Audit & Exports</h3>", unsafe_allow_html=True)
         st.markdown("<button onclick='window.print()' style='background: linear-gradient(135deg, #091a33 0%, #132e59 100%); color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px;'>🖨️ Export Financial Report to PDF</button>", unsafe_allow_html=True)
         
-        conn = get_db_connection()
-        df_audit = pd.read_sql_query("""
-            SELECT c.id as [Receipt ID], c.member_code as [Member Code], m.member_name as [Full Name], c.amount_paid as [Amount Paid (GH₵)]
-            FROM contributions c
-            LEFT JOIN members m ON c.member_code = m.member_code
-            ORDER BY c.id DESC
-        """, conn)
-        conn.close()
+        # 1. Group Selector Filter Dropdown
+    selected_group = st.selectbox("🎯 Filter Ledger View By Group", ["All Groups", "Adom", "Second Chance"])
+    
+    conn = get_db_connection()
+    
+    # 2. Build Query based on chosen group filter
+    query = """
+        SELECT c.id as [Receipt ID], c.member_code as [Member Code], 
+               m.member_name as [Full Name], c.amount_paid as [Amount Paid (GH¢)],
+               m.member_group as [Group]
+        FROM contributions c
+        LEFT JOIN members m ON c.member_code = m.member_code
+    """
+    
+    if selected_group != "All Groups":
+        query += f" WHERE m.member_group = '{selected_group}'"
         
-        if not df_audit.empty:
-            st.dataframe(df_audit, use_container_width=True)
-        else:
-            st.info("No logs found inside the audit matrix.")
-        st.markdown("</div>", unsafe_allow_html=True)
+    query += " ORDER BY c.id DESC"
+    
+    df_audit = pd.read_sql_query(query, conn)
+    
+    if not df_audit.empty:
+        # Display the filtered dataframe table
+        st.dataframe(df_audit, use_container_width=True)
+        
+        st.markdown("---")
+        ### 🛠️ ADMINISTRATIVE DELETION DESK ###
+        st.markdown("### 🗑️ Void / Delete a Receipt Record")
+        
+        # Pull list of active receipt IDs for selection drop down
+        receipt_list = df_audit["Receipt ID"].tolist()
+        receipt_to_delete = st.selectbox("Select Receipt ID to permanently remove:", receipt_list)
+        
+        if st.button("❌ Confirm Permanent Deletion", type="primary"):
+            try:
+                conn.execute("DELETE FROM contributions WHERE id = ?", (receipt_to_delete,))
+                conn.commit()
+                st.success(f"Receipt ID #{receipt_to_delete} successfully wiped from ledger records!")
+                st.rerun()
+            except Exception as e:
+                st.error(f"Error handling deletion execution: {e}")
+    else:
+        st.info(f"No financial entries found in the database matching the '{selected_group}' matrix filter.")
+        
+    conn.close()
+    st.markdown("</div>", unsafe_allow_html=True)
