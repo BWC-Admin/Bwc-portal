@@ -12,7 +12,6 @@ def get_db_connection():
 
 # --- ARKESEL API V2 ---
 def send_arkesel_sms(api_key, sender_id, phone, message):
-    def send_arkesel_sms(api_key, sender_id, phone, message):
     # Force the app to use your Streamlit secrets automatically if none are typed
     if not api_key:
         api_key = st.secrets.get("ARKESEL_API_KEY", "")
