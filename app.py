@@ -399,8 +399,9 @@ if st.session_state['role'] == "Admin":
     with tabs[2]:
         st.markdown("<div class='premium-card'><h3>Active Philadelphia Case Profiles</h3>", unsafe_allow_html=True)
         conn = get_db_connection()
-        df_funerals = pd.read_sql_query("SELECT id, funeral_name, levy_amount FROM funerals ORDER BY id DESC", conn)
-        conn.close()
+    # Updated query to include group_name
+    df_funerals = pd.read_sql_query("SELECT id, funeral_name, levy_amount, group_name FROM funerals ORDER BY id DESC", conn)
+    conn.close()
         
         if not df_funerals.empty:
             for idx, row in df_funerals.iterrows():
