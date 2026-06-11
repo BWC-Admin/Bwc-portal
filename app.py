@@ -6,6 +6,15 @@ import base64
 import requests
 from datetime import datetime
 
+# --- HIDE STREAMLIT FORK & GITHUB BUTTONS ---
+hide_style = """
+            <style>
+            header {visibility: hidden;}
+            footer {visibility: hidden;}
+            .stDeployButton {display:none;}
+            </style>
+            """
+st.markdown(hide_style, unsafe_allow_html=True)
 # --- DATABASE ENGINE ---
 def get_db_connection():
     return sqlite3.connect("church_funeral.db")
