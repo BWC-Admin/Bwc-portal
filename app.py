@@ -22,6 +22,8 @@ def get_db_connection():
 def init_db():
     conn = get_db_connection()
     cursor = conn.cursor()
+    
+    # 1. Create Funerals table with group categorization
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS funerals (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,10 +32,28 @@ def init_db():
             group_name TEXT NOT NULL
         )
     ''')
+    
+    # 2. Create Members table to hold rosters for both groups
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS members (
+            member_code TEXT PRIMARY KEY,
+            member_name TEXT NOT NULL,
+            phone_number TEXT,
+            member_group TEXT NOT NULL
+        )
+    ''')
+    
+    # 3. Safety checks to protect old data while migrating columns
     try:
         cursor.execute("ALTER TABLE funerals ADD COLUMN group_name TEXT DEFAULT 'Adom'")
     except sqlite3.OperationalError:
         pass
+        
+    try:
+        cursor.execute("ALTER TABLE members ADD COLUMN member_group TEXT DEFAULT 'Adom'")
+    except sqlite3.OperationalError:
+        pass
+        
     conn.commit()
     conn.close()
 
