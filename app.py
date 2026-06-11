@@ -356,8 +356,13 @@ with tabs[0]:
 if st.session_state['role'] == "Admin":
     # TAB 2: ROSTER WORKBOOK INGESTION
     with tabs[1]:
-        st.markdown("<div class='premium-card'><h3>Synchronize Roster Workbook</h3>", unsafe_allow_html=True)
-        uploaded_file = st.file_uploader("Upload Congregation Excel Spreadsheet (.xlsx)", type=["xlsx"])
+        st.markdown("<div class='premium card'><h3>Synchronize Roster Workbook</h3>", unsafe_allow_html=True)
+        
+        # 1. Select group before uploading
+        upload_group = st.radio("Which Roster group are you uploading?", ["Adom", "Second Chance"], horizontal=True)
+        
+        uploaded_file = st.file_uploader(f"Upload {upload_group} Excel Spreadsheet (.xlsx)", type=["xlsx"])
+        
         if uploaded_file is not None:
             try:
                 df_upload = pd.read_excel(uploaded_file)
@@ -366,10 +371,25 @@ if st.session_state['role'] == "Admin":
                     'member_id': 'member_code', 'id': 'member_code', 'code': 'member_code',
                     'name': 'member_name', 'phone': 'phone_number', 'phone_no': 'phone_number'
                 })
+                
+                # 2. Tag every member in this file with the selected group
+                df_upload['member_group'] = upload_group
+                
                 conn = get_db_connection()
-                df_upload[['member_code', 'member_name', 'phone_number']].to_sql('members', conn, if_exists='replace', index=False)
+                
+                # 3. Merge new members with existing ones from other groups
+                try:
+                    existing_df = pd.read_sql("SELECT * FROM members", conn)
+                    # Remove old records only for the group being uploaded right now
+                    existing_df = existing_df[existing_df['member_group'] != upload_group]
+                    df_final = pd.concat([existing_df, df_upload[['member_code', 'member_name', 'phone_number', 'member_group']]], ignore_index=True)
+                except Exception:
+                    df_final = df_upload[['member_code', 'member_name', 'phone_number', 'member_group']]
+                
+                df_final.to_sql('members', conn, if_exists='replace', index=False)
                 conn.close()
-                st.success("Roster synchronized and indexed perfectly into the database system layer!")
+                
+                st.success(f"{upload_group} Roster synchronized and indexed perfectly!")
                 st.rerun()
             except Exception as e:
                 st.error(f"Spreadsheet compilation error: {e}")
