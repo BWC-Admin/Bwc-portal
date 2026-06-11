@@ -228,13 +228,13 @@ if st.session_state['role'] == "Admin":
                     conn.execute("INSERT INTO funerals (funeral_name, levy_amount) VALUES (?, ?)", (fun_name, fun_levy))
                     conn.commit(); conn.close(); st.rerun()
 
-    st.sidebar.markdown("<br><h3 style='font-size:14px; color:#d4af37;'>📲 ARKESEL TRANSMISSION ENGINE</h3>", unsafe_allow_html=True)
-    default_key = st.secrets.get("ARKESEL_API_KEY", "")
+st.sidebar.markdown("<br><h3 style='font-size:14px; color:#d4af37;'>🔱 ARKESEL TRANSMISSION ENGINE</h3>", unsafe_allow_html=True)
+default_key = st.secrets.get("ARKESEL_API_KEY", "")
 default_sender = st.secrets.get("SENDER_ID", "BWC")
 
 ark_api_key = st.sidebar.text_input("Arkesel Key (v2)", value=default_key, type="password")
 ark_sender_id = st.sidebar.text_input("Sender ID Label", value=default_sender)
-    sms_toggle = st.sidebar.checkbox("Live Dispatch Mode", value=False)
+sms_toggle = st.sidebar.checkbox("Live Dispatch Mode", value=False)
 
 # --- LEDGER CALCULATIONS ---
 conn = get_db_connection()
