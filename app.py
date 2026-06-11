@@ -12,6 +12,16 @@ def get_db_connection():
 
 # --- ARKESEL API V2 ---
 def send_arkesel_sms(api_key, sender_id, phone, message):
+    def send_arkesel_sms(api_key, sender_id, phone, message):
+    # Force the app to use your Streamlit secrets automatically if none are typed
+    if not api_key:
+        api_key = st.secrets.get("ARKESEL_API_KEY", "")
+    if not sender_id or sender_id == "BWC":
+        sender_id = st.secrets.get("SENDER_ID", "BWC")
+
+    phone_str = str(phone).strip().replace(" ", "")
+    if phone_str.startswith('0'):
+        phone_str = '233' + phone_str[1:]
     phone_str = str(phone).strip().replace(" ", "")
     if phone_str.startswith('0'):
         phone_str = '233' + phone_str[1:]
