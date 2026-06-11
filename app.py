@@ -19,6 +19,26 @@ st.markdown(hide_style, unsafe_allow_html=True)
 def get_db_connection():
     return sqlite3.connect("church_funeral.db")
 
+def init_db():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS funerals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            funeral_name TEXT NOT NULL,
+            levy_amount REAL NOT NULL,
+            group_name TEXT NOT NULL
+        )
+    ''')
+    try:
+        cursor.execute("ALTER TABLE funerals ADD COLUMN group_name TEXT DEFAULT 'Adom'")
+    except sqlite3.OperationalError:
+        pass
+    conn.commit()
+    conn.close()
+
+init_db()
+
 # --- ARKESEL API V2 ---
 def send_arkesel_sms(api_key, sender_id, phone, message):
     # Force the app to use your Streamlit secrets automatically if none are typed
