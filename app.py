@@ -346,14 +346,24 @@ ark_api_key = st.sidebar.text_input("Arkesel Key (v2)", value=default_key, type=
 ark_sender_id = st.sidebar.text_input("Sender ID Label", value=default_sender)
 sms_toggle = st.sidebar.checkbox("Live Dispatch Mode", value=False)
 
-# --- LEDGER CALCULATIONS ---
+# --- LEDGER CALCULATIONS (BRANCH FILTERED) ---
 conn = get_db_connection()
-df_m = pd.read_sql_query("SELECT * FROM members", conn)
+current_branch = st.session_state.get('branch', 'NUNGUA MAIN (Mother)')
+current_role = st.session_state.get('role', 'Branch User')
 
-total_req_levy = conn.execute("SELECT SUM(levy_amount) FROM funerals").fetchone()[0] or 0.0
-total_paid_ledger = conn.execute("SELECT SUM(amount_paid) FROM contributions").fetchone()[0] or 0.0
+if current_role in ['Admin', 'Secretary', 'Data Entry']:
+    # Admins see everything
+    df_m = pd.read_sql_query("SELECT * FROM members", conn)
+    total_req_levy = conn.execute("SELECT SUM(levy_amount) FROM funerals").fetchone()[0] or 0
+    total_paid_ledger = conn.execute("SELECT SUM(amount_paid) FROM contributions").fetchone()[0] or 0
+    funeral_count = conn.execute("SELECT COUNT(*) FROM funerals").fetchone()[0] or 0
+else:
+    # Sub-branches see ONLY their branch data
+    df_m = pd.read_sql_query("SELECT * FROM members WHERE branch_name = ?", conn, params=(current_branch,))
+    total_req_levy = conn.execute("SELECT SUM(levy_amount) FROM funerals WHERE branch_name = ?", (current_branch,)).fetchone()[0] or 0
+    total_paid_ledger = conn.execute("SELECT SUM(amount_paid) FROM contributions WHERE branch_name = ?", (current_branch,)).fetchone()[0] or 0
+    funeral_count = conn.execute("SELECT COUNT(*) FROM funerals WHERE branch_name = ?", (current_branch,)).fetchone()[0] or 0
 
-funeral_count = conn.execute("SELECT COUNT(*) FROM funerals").fetchone()[0] or 0
 member_count = len(df_m)
 conn.close()
 
