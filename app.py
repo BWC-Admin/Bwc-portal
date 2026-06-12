@@ -227,35 +227,35 @@ if not st.session_state['logged_in']:
             
             if st.button("🔐 Authenticate and Enter Portal"):
         # 1. MAIN MOTHER BRANCH (ADMIN)
-        if user_id.lower() == "admin" and password == "nungua123":
+        if user_id.lower() == "admin" and password == "NUNGUA@2026":
             st.session_state['role'] = 'Admin'
             st.session_state['branch'] = 'NUNGUA MAIN (Mother)'
             st.success("🟢 Nungua Main Administration Portal Activated!")
             st.rerun()
             
         # 2. LASHIBI SUB-BRANCH
-        elif user_id.lower() == "lashibi" and password == "lashibi2026":
+        elif user_id.lower() == "lashibi" and password == "LASHIBI@2026":
             st.session_state['role'] = 'Branch User'
             st.session_state['branch'] = 'LASHIBI'
             st.success("🟢 Lashibi Branch Terminal Activated!")
             st.rerun()
             
         # 3. TESHIE SUB-BRANCH
-        elif user_id.lower() == "teshie" and password == "teshie2026":
+        elif user_id.lower() == "teshie" and password == "TESHIE@2026":
             st.session_state['role'] = 'Branch User'
             st.session_state['branch'] = 'TESHIE'
             st.success("🟢 Teshie Branch Terminal Activated!")
             st.rerun()
             
         # 4. LABADI SUB-BRANCH
-        elif user_id.lower() == "labadi" and password == "labadi2026":
+        elif user_id.lower() == "labadi" and password == "LABADI@2026":
             st.session_state['role'] = 'Branch User'
             st.session_state['branch'] = 'LABADI'
             st.success("🟢 Labadi Branch Terminal Activated!")
             st.rerun()
             
         # 5. BURMA CAMP SUB-BRANCH
-        elif user_id.lower() == "burmacamp" and password == "burma2026":
+        elif user_id.lower() == "burmacamp" and password == "BURMACAMP@2026":
             st.session_state['role'] = 'Branch User'
             st.session_state['branch'] = 'BURMA CAMP'
             st.success("🟢 Burma Camp Branch Terminal Activated!")
