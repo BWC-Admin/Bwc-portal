@@ -346,26 +346,57 @@ ark_api_key = st.sidebar.text_input("Arkesel Key (v2)", value=default_key, type=
 ark_sender_id = st.sidebar.text_input("Sender ID Label", value=default_sender)
 sms_toggle = st.sidebar.checkbox("Live Dispatch Mode", value=False)
 
-# --- LEDGER CALCULATIONS (BRANCH FILTERED) ---
+# --- LEDGER CALCULATIONS (FAIL-SAFE FILTER) ---
 conn = get_db_connection()
 current_branch = st.session_state.get('branch', 'NUNGUA MAIN (Mother)')
 current_role = st.session_state.get('role', 'Branch User')
 
-if current_role in ['Admin', 'Secretary', 'Data Entry']:
-    # Admins see everything
-    df_m = pd.read_sql_query("SELECT * FROM members", conn)
-    total_req_levy = conn.execute("SELECT SUM(levy_amount) FROM funerals").fetchone()[0] or 0
-    total_paid_ledger = conn.execute("SELECT SUM(amount_paid) FROM contributions").fetchone()[0] or 0
-    funeral_count = conn.execute("SELECT COUNT(*) FROM funerals").fetchone()[0] or 0
-else:
-    # Sub-branches see ONLY their branch data
-    df_m = pd.read_sql_query("SELECT * FROM members WHERE branch_name = ?", conn, params=(current_branch,))
-    total_req_levy = conn.execute("SELECT SUM(levy_amount) FROM funerals WHERE branch_name = ?", (current_branch,)).fetchone()[0] or 0
-    total_paid_ledger = conn.execute("SELECT SUM(amount_paid) FROM contributions WHERE branch_name = ?", (current_branch,)).fetchone()[0] or 0
-    funeral_count = conn.execute("SELECT COUNT(*) FROM funerals WHERE branch_name = ?", (current_branch,)).fetchone()[0] or 0
+# 1. Load the data safely from SQL first
+df_m = pd.read_sql_query("SELECT * FROM members", conn)
 
-member_count = len(df_m)
+try:
+    df_funerals = pd.read_sql_query("SELECT * FROM funerals", conn)
+except Exception:
+    df_funerals = pd.DataFrame(columns=['levy_amount', 'branch_name', 'branch'])
+
+try:
+    df_contribs = pd.read_sql_query("SELECT * FROM contributions", conn)
+except Exception:
+    df_contribs = pd.DataFrame(columns=['amount_paid', 'branch_name', 'branch'])
+
 conn.close()
+
+# 2. Dynamic Pandas Filter based on role
+if current_role not in ['Admin', 'Secretary', 'Data Entry']:
+    # Determine which column name exists in your members table
+    branch_col_m = 'branch_name' if 'branch_name' in df_m.columns else ('branch' if 'branch' in df_m.columns else None)
+    if branch_col_m:
+        df_m = df_m[df_m[branch_col_m].astype(str).str.upper() == str(current_branch).upper()]
+
+    # Filter funerals data
+    branch_col_f = 'branch_name' if 'branch_name' in df_funerals.columns else ('branch' if 'branch' in df_funerals.columns else None)
+    if branch_col_f and not df_funerals.empty:
+        df_funerals = df_funerals[df_funerals[branch_col_f].astype(str).str.upper() == str(current_branch).upper()]
+
+    # Filter contributions data
+    branch_col_c = 'branch_name' if 'branch_name' in df_contribs.columns else ('branch' if 'branch' in df_contribs.columns else None)
+    if branch_col_c and not df_contribs.empty:
+        df_contribs = df_contribs[df_contribs[branch_col_c].astype(str).str.upper() == str(current_branch).upper()]
+
+# 3. Calculate final metric values from the filtered DataFrames
+member_count = len(df_m)
+
+try:
+    total_req_levy = float(df_funerals['levy_amount'].sum()) if 'levy_amount' in df_funerals.columns else 0.0
+except Exception:
+    total_req_levy = 0.0
+
+try:
+    total_paid_ledger = float(df_contribs['amount_paid'].sum()) if 'amount_paid' in df_contribs.columns else 0.0
+except Exception:
+    total_paid_ledger = 0.0
+
+funeral_count = len(df_funerals)
 
 # --- PRIVILEGE-BASED NAVIGATION TABS ---
 if st.session_state['role'] == "Admin":
