@@ -217,7 +217,7 @@ if not st.session_state['logged_in']:
         """, unsafe_allow_html=True)
         
         # The form fields are nested directly inside the matching white background wrapper block
-        with st.form("portal_login_form"):
+with st.form("portal_login_form"):
         st.markdown("<div style='background: rgba(255, 255, 255, 0.98); padding: 0 35px 35px 35px; box-shadow: 0 15px 35px rgba(9, 26, 51, 0.1); border-radius: 16px;'>", unsafe_allow_html=True)
         username = st.text_input("Access Account ID", placeholder="e.g. admin1")
         password = st.text_input("Security Passphrase", type="password", placeholder="********")
