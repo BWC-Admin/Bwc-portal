@@ -224,46 +224,67 @@ if not st.session_state['logged_in']:
             st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
             submit_login = st.form_submit_button("Authorize & Open Ledger", use_container_width=True)
             st.markdown("</div>", unsafe_allow_html=True)
-            
-        if st.button("🔐 Authenticate and Enter Portal"):
+
+       if submit_login:
         # 1. MAIN MOTHER BRANCH (ADMIN)
-        if user_id.lower() == "admin" and password == "NUNGUA@2026":
+        if username.lower() in ["admin1", "admin2", "admin"] and password in ["2000@Philip@19", "NUNGUA@2026"]:
+            st.session_state['logged_in'] = True
             st.session_state['role'] = 'Admin'
             st.session_state['branch'] = 'NUNGUA MAIN (Mother)'
             st.success("🟢 Nungua Main Administration Portal Activated!")
             st.rerun()
             
         # 2. LASHIBI SUB-BRANCH
-        elif user_id.lower() == "lashibi" and password == "LASHIBI@2026":
+        elif username.lower() == "lashibi" and password in ["lashibi2026", "LASHIBI@2026"]:
+            st.session_state['logged_in'] = True
             st.session_state['role'] = 'Branch User'
             st.session_state['branch'] = 'LASHIBI'
             st.success("🟢 Lashibi Branch Terminal Activated!")
             st.rerun()
             
         # 3. TESHIE SUB-BRANCH
-        elif user_id.lower() == "teshie" and password == "TESHIE@2026":
+        elif username.lower() == "teshie" and password in ["teshie2026", "TESHIE@2026"]:
+            st.session_state['logged_in'] = True
             st.session_state['role'] = 'Branch User'
             st.session_state['branch'] = 'TESHIE'
             st.success("🟢 Teshie Branch Terminal Activated!")
             st.rerun()
             
         # 4. LABADI SUB-BRANCH
-        elif user_id.lower() == "labadi" and password == "LABADI@2026":
+        elif username.lower() == "labadi" and password in ["labadi2026", "LABADI@2026"]:
+            st.session_state['logged_in'] = True
             st.session_state['role'] = 'Branch User'
             st.session_state['branch'] = 'LABADI'
             st.success("🟢 Labadi Branch Terminal Activated!")
             st.rerun()
             
         # 5. BURMA CAMP SUB-BRANCH
-        elif user_id.lower() == "burmacamp" and password == "BURMACAMP@2026":
+        elif username.lower() == "burmacamp" and password in ["burma2026", "BURMA@2026"]:
+            st.session_state['logged_in'] = True
             st.session_state['role'] = 'Branch User'
             st.session_state['branch'] = 'BURMA CAMP'
             st.success("🟢 Burma Camp Branch Terminal Activated!")
             st.rerun()
             
+        # 6. GENERAL SECRETARY ROLE
+        elif username.lower() in ["secretary", "sec1", "sec2"] and password == "bwcsec2026":
+            st.session_state['logged_in'] = True
+            st.session_state['role'] = 'Secretary'
+            st.session_state['branch'] = 'NUNGUA MAIN (Mother)'
+            st.success("🟢 Secretarial Access Granted!")
+            st.rerun()
+            
+        # 7. GENERAL DATA ENTRY ROLE (Can assist any branch)
+        elif username.lower() in ["entry", "dataentry"] and password == "bwcdata2026":
+            st.session_state['logged_in'] = True
+            st.session_state['role'] = 'Data Entry'
+            st.session_state['branch'] = 'NUNGUA MAIN (Mother)'
+            st.success("🟢 General Data Entry Access Granted!")
+            st.rerun()
+            
         else:
-            st.error("🔴 Invalid Branch Identification User ID or Access Key token.")
-
+            st.error("🔴 Invalid credentials. Please verify your Branch ID and Passphrase.")
+            st.stop()
 # --- GOLD & NAVY BRANDING BANNER ---
 st.markdown(f"""
     <div style='background: linear-gradient(135deg, #091a33 0%, #132e59 100%); padding: 35px; border-radius: 16px; margin-bottom: 30px; border-bottom: 5px solid #d4af37; box-shadow: 0 10px 25px rgba(9,26,51,0.15);'>
