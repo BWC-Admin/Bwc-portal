@@ -225,7 +225,7 @@ if not st.session_state['logged_in']:
             submit_login = st.form_submit_button("Authorize & Open Ledger", use_container_width=True)
             st.markdown("</div>", unsafe_allow_html=True)
             
-            if st.button("🔐 Authenticate and Enter Portal"):
+        if st.button("🔐 Authenticate and Enter Portal"):
         # 1. MAIN MOTHER BRANCH (ADMIN)
         if user_id.lower() == "admin" and password == "NUNGUA@2026":
             st.session_state['role'] = 'Admin'
