@@ -422,15 +422,15 @@ with tabs[0]:
     
     st.markdown("<br>", unsafe_allow_html=True)
     # --- ADMIN BRANCH SUMMARY TABLE ---
-if current_role == 'Admin':
-    st.write("### 🏢 Branch Performance Breakdown")
-    if not df_m.empty:
-        branch_counts = df_m['branch_name'].value_counts().reset_index()
-        branch_counts.columns = ['Branch Location', 'Total Members']
-        st.dataframe(branch_counts, use_container_width=True, hide_index=True)
-    else:
-        st.info("No member data available to summarize.")
-    st.write("---")
+    if current_role == 'Admin':
+        st.write("### 🏢 Branch Performance Breakdown")
+        if not df_m.empty:
+            branch_counts = df_m['branch_name'].value_counts().reset_index()
+            branch_counts.columns = ['Branch Location', 'Total Members']
+            st.dataframe(branch_counts, use_container_width=True, hide_index=True)
+        else:
+            st.info("No member data available to summarize.")
+        st.write("---")
             
     if df_m.empty:
         st.info("ℹ️ No registered members found for this branch profile.")
