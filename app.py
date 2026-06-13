@@ -350,7 +350,29 @@ sms_toggle = st.sidebar.checkbox("Live Dispatch Mode", value=False)
 conn = get_db_connection()
 current_branch = st.session_state.get('branch', 'NUNGUA MAIN (Mother)')
 current_role = st.session_state.get('role', 'Branch User')
+# --- AUTOMATIC DATABASE COLUMN REPAIR ---
+try:
+    cursor = conn.cursor()
+    cursor.execute("ALTER TABLE members ADD COLUMN branch_name TEXT DEFAULT 'NUNGUA MAIN (Mother)'")
+    cursor.execute("ALTER TABLE funerals ADD COLUMN branch_name TEXT DEFAULT 'NUNGUA MAIN (Mother)'")
+    cursor.execute("ALTER TABLE contributions ADD COLUMN branch_name TEXT DEFAULT 'NUNGUA MAIN (Mother)'")
+    conn.commit()
+except Exception:
+    pass  # Automatically skips if columns already exist safely
 
+# # 1. Load the data safely based on branch permissions
+if current_role == 'Admin':
+    # Mother Branch pulls the entire global dataset
+    df_m = pd.read_sql_query("SELECT * FROM members", conn)
+    df_funerals = pd.read_sql_query("SELECT * FROM funerals", conn)
+    df_contribs = pd.read_sql_query("SELECT * FROM contributions", conn)
+else:
+    # Sub-branches only pull data tagged with their branch name
+    df_m = pd.read_sql_query("SELECT * FROM members WHERE branch_name = ?", conn, params=(current_branch,))
+    df_funerals = pd.read_sql_query("SELECT * FROM funerals WHERE branch_name = ?", conn, params=(current_branch,))
+    df_contribs = pd.read_sql_query("SELECT * FROM contributions WHERE branch_name = ?", conn, params=(current_branch,))
+
+conn.close()
 # # 1. Load the data safely based on branch permissions
 if current_role == 'Admin':
     # Mother Branch pulls the entire global dataset
