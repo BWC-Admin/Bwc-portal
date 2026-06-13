@@ -426,7 +426,17 @@ with tabs[0]:
         st.info("ℹ️ No registered members found for this branch profile.")
     else:
         st.markdown("<div class='premium-card'><h3>Log Financial Contribution Receipt</h3></div>", unsafe_allow_html=True)
+        # --- DYNAMIC BRANCH CONTACT DETAILS FOR RECEIPTS ---
+        current_branch = st.session_state.get('branch', 'NUNGUA MAIN (Mother)')
         
+        if current_branch == 'NUNGUA MAIN (Mother)':
+            st.markdown("<p style='text-align: center; color: gray;'>🏢 Headquarters: Nungua, Accra | 📞 Phone: +233 24 000 0001</p>", unsafe_allow_html=True)
+        elif current_branch == 'LABADI':
+            st.markdown("<p style='text-align: center; color: gray;'>🏢 Labadi Assembly Location | 📞 Phone: +233 24 000 0002</p>", unsafe_allow_html=True)
+        else:
+            st.markdown(f"<p style='text-align: center; color: gray;'>🏢 {current_branch} Assembly | 📞 Contact Admin for details</p>", unsafe_allow_html=True)
+            
+        st.write("---")
         df_m['dropdown_label'] = df_m['member_code'].astype(str) + " - " + df_m['member_name']
         selected_profile = st.selectbox("Search Member Profile", df_m['dropdown_label'].unique())
         
