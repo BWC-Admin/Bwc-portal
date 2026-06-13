@@ -347,8 +347,10 @@ ark_sender_id = st.sidebar.text_input("Sender ID Label", value=default_sender)
 sms_toggle = st.sidebar.checkbox("Live Dispatch Mode", value=False)
 
 # --- LEDGER CALCULATIONS (FAIL-SAFE FILTER) ---
-# --- 1. OPEN DATABASE CONNECTION FIRST ---
+# --- 1. SET UP CONNECTIONS AND VARIABLES FIRST ---
 conn = get_db_connection()
+current_branch = st.session_state.get('branch', 'NUNGUA MAIN (Mother)')
+current_role = st.session_state.get('role', 'Branch User')
 
 # --- 2. AUTOMATIC DATABASE COLUMN REPAIR ---
 try:
@@ -360,17 +362,33 @@ try:
 except Exception:
     pass  # Automatically skips if columns already exist safely
 
-# --- 3. LOAD DATA BASED ON BRANCH PERMISSIONS ---
+# --- 3. LOAD FILTERED DATA FOR ROLES ---
 if current_role == 'Admin':
-    # Mother Branch pulls everything
+    # Mother Branch sees everything across the entire platform
     df_m = pd.read_sql_query("SELECT * FROM members", conn)
-    df_funerals = pd.read_sql_query("SELECT * FROM funerals", conn)
-    df_contribs = pd.read_sql_query("SELECT * FROM contributions", conn)
+    
+    try:
+        df_funerals = pd.read_sql_query("SELECT * FROM funerals", conn)
+    except Exception:
+        df_funerals = pd.read_sql_query("SELECT * FROM funerals", conn)
+        
+    try:
+        df_contribs = pd.read_sql_query("SELECT * FROM contributions", conn)
+    except Exception:
+        df_contribs = pd.read_sql_query("SELECT * FROM contributions", conn)
 else:
-    # Sub-branches pull only their own data
+    # Sub-branches only fetch data matching their logged-in branch name
     df_m = pd.read_sql_query("SELECT * FROM members WHERE branch_name = ?", conn, params=(current_branch,))
-    df_funerals = pd.read_sql_query("SELECT * FROM funerals WHERE branch_name = ?", conn, params=(current_branch,))
-    df_contribs = pd.read_sql_query("SELECT * FROM contributions WHERE branch_name = ?", conn, params=(current_branch,))
+    
+    try:
+        df_funerals = pd.read_sql_query("SELECT * FROM funerals WHERE branch_name = ?", conn, params=(current_branch,))
+    except Exception:
+        df_funerals = pd.DataFrame(columns=['levy_amount', 'branch_name', 'branch'])
+        
+    try:
+        df_contribs = pd.read_sql_query("SELECT * FROM contributions WHERE branch_name = ?", conn, params=(current_branch,))
+    except Exception:
+        df_contribs = pd.DataFrame(columns=['amount_paid', 'branch_name', 'branch'])
 
 conn.close()
 # # 1. Load the data safely based on branch permissions
