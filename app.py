@@ -351,21 +351,19 @@ conn = get_db_connection()
 current_branch = st.session_state.get('branch', 'NUNGUA MAIN (Mother)')
 current_role = st.session_state.get('role', 'Branch User')
 
-# 1. Load the data safely from SQL first
-df_m = pd.read_sql_query("SELECT * FROM members", conn)
-
-try:
+# # 1. Load the data safely based on branch permissions
+if current_role == 'Admin':
+    # Mother Branch pulls the entire global dataset
+    df_m = pd.read_sql_query("SELECT * FROM members", conn)
     df_funerals = pd.read_sql_query("SELECT * FROM funerals", conn)
-except Exception:
-    df_funerals = pd.DataFrame(columns=['levy_amount', 'branch_name', 'branch'])
-
-try:
     df_contribs = pd.read_sql_query("SELECT * FROM contributions", conn)
-except Exception:
-    df_contribs = pd.DataFrame(columns=['amount_paid', 'branch_name', 'branch'])
+else:
+    # Sub-branches only pull data tagged with their branch name
+    df_m = pd.read_sql_query("SELECT * FROM members WHERE branch_name = ?", conn, params=(current_branch,))
+    df_funerals = pd.read_sql_query("SELECT * FROM funerals WHERE branch_name = ?", conn, params=(current_branch,))
+    df_contribs = pd.read_sql_query("SELECT * FROM contributions WHERE branch_name = ?", conn, params=(current_branch,))
 
 conn.close()
-
 # 2. Dynamic Pandas Filter based on role
 if current_role not in ['Admin', 'Secretary', 'Data Entry']:
     # Determine which column name exists in your members table
