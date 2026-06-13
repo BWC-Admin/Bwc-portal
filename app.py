@@ -421,7 +421,17 @@ with tabs[0]:
     kpi3.markdown(f"<div style='background: white; padding: 20px; border-radius: 12px; border-left: 4px solid #28a745; box-shadow: 0 4px 15px rgba(0,0,0,0.02);'><b>Total Funds Deposited</b><h2 style='margin:0; color:#28a745;'>GH₵ {total_paid_ledger:,.2f}</h2></div>", unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
-    
+    # --- ADMIN BRANCH SUMMARY TABLE ---
+if current_role == 'Admin':
+    st.write("### 🏢 Branch Performance Breakdown")
+    if not df_m.empty:
+        branch_counts = df_m['branch_name'].value_counts().reset_index()
+        branch_counts.columns = ['Branch Location', 'Total Members']
+        st.dataframe(branch_counts, use_container_width=True, hide_index=True)
+    else:
+        st.info("No member data available to summarize.")
+    st.write("---")
+            
     if df_m.empty:
         st.info("ℹ️ No registered members found for this branch profile.")
     else:
