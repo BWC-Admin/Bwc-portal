@@ -347,12 +347,11 @@ ark_sender_id = st.sidebar.text_input("Sender ID Label", value=default_sender)
 sms_toggle = st.sidebar.checkbox("Live Dispatch Mode", value=False)
 
 # --- LEDGER CALCULATIONS (FAIL-SAFE FILTER) ---
-# --- 1. ESTABLISH CONNECTION AND USER CONTEXT ---
 conn = get_db_connection()
 current_branch = st.session_state.get('branch', 'NUNGUA MAIN (Mother)')
 current_role = st.session_state.get('role', 'Branch User')
 
-# --- 2. AUTOMATIC DATABASE REPAIR (CRASH PREVENTION) ---
+# --- AUTOMATIC DATABASE COLUMN REPAIR ---
 try:
     cursor = conn.cursor()
     cursor.execute("ALTER TABLE members ADD COLUMN branch_name TEXT DEFAULT 'NUNGUA MAIN (Mother)'")
@@ -360,36 +359,9 @@ try:
     cursor.execute("ALTER TABLE contributions ADD COLUMN branch_name TEXT DEFAULT 'NUNGUA MAIN (Mother)'")
     conn.commit()
 except Exception:
-    pass 
+    pass  # Automatically skips if columns already exist safely
 
-# --- 3. EXECUTE FILTERED QUERIES ---
-if current_role == 'Admin':
-    # Mother Branch pulls everything
-    df_m = pd.read_sql_query("SELECT * FROM members", conn)
-    try:
-        df_funerals = pd.read_sql_query("SELECT * FROM funerals", conn)
-    except Exception:
-        df_funerals = pd.DataFrame(columns=['levy_amount', 'branch_name', 'branch'])
-    try:
-        df_contribs = pd.read_sql_query("SELECT * FROM contributions", conn)
-    except Exception:
-        df_contribs = pd.DataFrame(columns=['amount_paid', 'branch_name', 'branch'])
-else:
-    # Sub-branches pull only their specific branch data
-    # This addresses the error at line 402 by ensuring conn is active
-    df_m = pd.read_sql_query("SELECT * FROM members WHERE branch_name = ?", conn, params=(current_branch,))
-    try:
-        df_funerals = pd.read_sql_query("SELECT * FROM funerals WHERE branch_name = ?", conn, params=(current_branch,))
-    except Exception:
-        df_funerals = pd.DataFrame(columns=['levy_amount', 'branch_name', 'branch'])
-    try:
-        df_contribs = pd.read_sql_query("SELECT * FROM contributions WHERE branch_name = ?", conn, params=(current_branch,))
-    except Exception:
-        df_contribs = pd.DataFrame(columns=['amount_paid', 'branch_name', 'branch'])
-
-# --- 4. CLOSE CONNECTION ONLY AFTER ALL QUERIES FINISH ---
-conn.close()
-# # 1. Load the data safely based on branch permissions
+# --- LOAD THE DATA SAFELY BASED ON BRANCH PERMISSIONS ---
 if current_role == 'Admin':
     # Mother Branch pulls the entire global dataset
     df_m = pd.read_sql_query("SELECT * FROM members", conn)
@@ -401,19 +373,7 @@ else:
     df_funerals = pd.read_sql_query("SELECT * FROM funerals WHERE branch_name = ?", conn, params=(current_branch,))
     df_contribs = pd.read_sql_query("SELECT * FROM contributions WHERE branch_name = ?", conn, params=(current_branch,))
 
-conn.close()
-# # 1. Load the data safely based on branch permissions
-if current_role == 'Admin':
-    # Mother Branch pulls the entire global dataset
-    df_m = pd.read_sql_query("SELECT * FROM members", conn)
-    df_funerals = pd.read_sql_query("SELECT * FROM funerals", conn)
-    df_contribs = pd.read_sql_query("SELECT * FROM contributions", conn)
-else:
-    # Sub-branches only pull data tagged with their branch name
-    df_m = pd.read_sql_query("SELECT * FROM members WHERE branch_name = ?", conn, params=(current_branch,))
-    df_funerals = pd.read_sql_query("SELECT * FROM funerals WHERE branch_name = ?", conn, params=(current_branch,))
-    df_contribs = pd.read_sql_query("SELECT * FROM contributions WHERE branch_name = ?", conn, params=(current_branch,))
-
+# Close the database connection ONLY ONCE after all queries are finished
 conn.close()
 # 2. Dynamic Pandas Filter based on role
 if current_role not in ['Admin', 'Secretary', 'Data Entry']:
