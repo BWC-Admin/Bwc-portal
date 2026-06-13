@@ -427,10 +427,10 @@ with tabs[0]:
         st.dataframe(df_m['branch_name'].value_counts().reset_index(name='Total Members').rename(columns={'index': 'Branch Location'}), use_container_width=True, hide_index=True)
         st.write("---")
             
-    if df_m.empty:
-        st.info("ℹ️ No registered members found for this branch profile.")
-    else:
-        st.markdown("<div class='premium-card'><h3>Log Financial Contribution Receipt</h3></div>", unsafe_allow_html=True)
+                if df_m.empty:
+                    st.info("ℹ️ No registered members found for this branch profile.")
+                else:
+                    st.markdown("<div class='premium-card'><h3>Log Financial Contribution Receipt</h3></div>", unsafe_allow_html=True)
         # --- DYNAMIC BRANCH CONTACT DETAILS FOR RECEIPTS ---
         current_branch = st.session_state.get('branch', 'NUNGUA MAIN (Mother)')
         
