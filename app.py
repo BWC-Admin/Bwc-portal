@@ -414,30 +414,29 @@ with tabs[0]:
     st.markdown("<br>", unsafe_allow_html=True)
     
     if df_m.empty:
-    st.info("ℹ️ No registered members found for this branch profile.")
-else:
-    st.markdown("<div class='premium-card'><h3>Log Financial Contribution Receipt</h3></div>", unsafe_allow_html=True)
-    
-    df_m['dropdown_label'] = df_m['member_code'].astype(str) + " - " + df_m['member_name']
-    selected_profile = st.selectbox("Search Member Profile", df_m['dropdown_label'].unique())
-    
-    member_row = df_m[df_m['dropdown_label'] == selected_profile].iloc[0]
-    m_code = member_row['member_code']
-    m_name = member_row['member_name']
-    m_phone = member_row['phone_number']
-    
-    conn = get_db_connection()
-    clean_code = str(m_code).strip()
-    
-    already_paid_res = conn.execute(
-        "SELECT SUM(amount_paid) FROM contributions WHERE TRIM(CAST(member_code AS TEXT)) = ?", 
-        (clean_code,)
-    ).fetchone()
-    already_paid = already_paid_res[0] if already_paid_res and already_paid_res[0] is not None else 0.0
-    conn.close()
-    
-    current_balance = float(total_req_levy) - float(already_paid)
-
+        st.info("ℹ️ No registered members found for this branch profile.")
+    else:
+        st.markdown("<div class='premium-card'><h3>Log Financial Contribution Receipt</h3></div>", unsafe_allow_html=True)
+        
+        df_m['dropdown_label'] = df_m['member_code'].astype(str) + " - " + df_m['member_name']
+        selected_profile = st.selectbox("Search Member Profile", df_m['dropdown_label'].unique())
+        
+        member_row = df_m[df_m['dropdown_label'] == selected_profile].iloc[0]
+        m_code = member_row['member_code']
+        m_name = member_row['member_name']
+        m_phone = member_row['phone_number']
+        
+        conn = get_db_connection()
+        clean_code = str(m_code).strip()
+        
+        already_paid_res = conn.execute(
+            "SELECT SUM(amount_paid) FROM contributions WHERE TRIM(CAST(member_code AS TEXT)) = ?", 
+            (clean_code,)
+        ).fetchone()
+        already_paid = already_paid_res[0] if already_paid_res and already_paid_res[0] is not None else 0.0
+        conn.close()
+        
+        current_balance = float(total_req_levy) - float(already_paid)
         mc1, mc2, mc3 = st.columns(3)
         st.markdown(f"**Cumulative Assessment Owed:** GH₵ {total_req_levy:,.2f}")
         st.markdown(f"**Total Contributed:** GH₵ {already_paid:,.2f}")
