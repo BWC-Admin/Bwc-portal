@@ -601,9 +601,9 @@ with tabs[3]:
     
         df_audit = pd.read_sql_query(query, conn)
     
-    if not df_audit.empty:
-        # Display the filtered dataframe table
-        st.dataframe(df_audit, use_container_width=True)
+        if not df_audit.empty:
+            # Display the filtered dataframe table
+            st.dataframe(df_audit, use_container_width=True)
         
         st.markdown("---")
         ### 🛠️ ADMINISTRATIVE DELETION DESK ###
