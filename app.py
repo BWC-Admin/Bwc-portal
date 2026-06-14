@@ -596,7 +596,7 @@ with tabs[3]:
         """
     
         if selected_group != "All Groups":
-        query += f" WHERE m.member_group = '{selected_group}'"
+            query += f" WHERE m.member_group = '{selected_group}'"
         
     query += " ORDER BY c.id DESC"
     
