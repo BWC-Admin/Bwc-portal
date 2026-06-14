@@ -203,28 +203,132 @@ if 'logged_in' not in st.session_state:
     st.session_state['role'] = None
 
 if not st.session_state['logged_in']:
-    _, col_center, _ = st.columns([1, 1.2, 1])
+    # 1. Inject Premium CSS Styling for BWC Philadelphia Movement
+    st.markdown("""
+        <style>
+        .stApp {
+            background-color: #050a14 !important;
+            color: white !important;
+        }
+        [data-testid="stHeader"] {
+            background: transparent !important;
+        }
+        .hero-container {
+            text-align: center;
+            padding: 40px 20px 20px 20px;
+        }
+        .official-badge {
+            background: #1e3a8a;
+            color: #93c5fd;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        .main-title {
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.2;
+            margin-bottom: 10px;
+            color: white;
+        }
+        .main-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+            max-width: 500px;
+            margin: 0 auto 25px auto;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        .lock-icon-circle {
+            width: 65px;
+            height: 65px;
+            background: #2563eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px auto;
+            font-size: 28px;
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+        }
+        div[data-testid="stTextInput"] label {
+            color: #94a3b8 !important;
+            font-size: 11px !important;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        div[data-testid="stTextInput"] input {
+            background: rgba(0, 0, 0, 0.3) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+            border-radius: 10px !important;
+        }
+        .stButton > button {
+            width: 100% !important;
+            background: #2563eb !important;
+            color: white !important;
+            border: none !important;
+            padding: 12px !important;
+            border-radius: 10px !important;
+            font-weight: 700 !important;
+            margin-top: 15px !important;
+        }
+        .stButton > button:hover {
+            background: #1d4ed8 !important;
+            box-shadow: 0 0 15px rgba(37, 99, 235, 0.5) !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # 2. Top Header / Lander Content
+    st.markdown("""
+        <div class="hero-container">
+            <div class="official-badge">Official Administrative Standard</div>
+            <div class="main-title">BWC PHILADELPHIA<br>MOVEMENT</div>
+            <p class="main-subtitle">
+                The definitive Movement framework for managing Events, Fiscal Liquidity, and Member Welfare with absolute precision.
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # 3. Centered Layout Column Split
+    _, col_center, _ = st.columns([1, 2, 1])
     with col_center:
-        st.markdown("<div style='height: 60px;'></div>", unsafe_allow_html=True)
-        
-        # HTML Header Wrapper block
         st.markdown("""
-            <div style='background: rgba(255, 255, 255, 0.98); padding: 35px 35px 5px 35px; border-radius: 20px 20px 0 0; box-shadow: 0 15px 35px rgba(9, 26, 51, 0.15); border-top: 6px solid #091a33; text-align: center;'>
-                <h2 style='color: #091a33; margin-bottom: 5px; font-size: 24px; margin-top:0;'>⛪ BWC PHILADELPHIA</h2>
-                <p style='color: #d4af37; font-weight: bold; margin-top: 0; font-size: 13px; letter-spacing: 2px;'>SECURE ACCESS GATEWAY</p>
-                <hr style='border: 0; border-top: 1px solid #eee; margin-bottom: 10px;'>
+            <div class="login-card">
+                <div class="lock-icon-circle">🔐</div>
+                <h4 style='color: white; margin-bottom: 5px; font-weight:700;'>SECURE EXECUTIVE ACCESS</h4>
+                <p style='color: #64748b; font-size: 12px; margin-bottom: 20px;'>VERIFIED MOVEMENT CREDENTIAL REQUIRED</p>
             </div>
         """, unsafe_allow_html=True)
         
-        # Check if the user is already authenticated
-    if not st.session_state.get('logged_in', False):
+        # Safe form wrap to handle your existing multiple admin list cleanly
         with st.form("portal_login_form"):
-            st.markdown("<div style='background: rgba(255, 255, 255, 0.98); padding: 0 35px 35px 35px; box-shadow: 0 15px 35px rgba(9, 26, 51, 0.1); border-radius: 16px;'>", unsafe_allow_html=True)
             username = st.text_input("Access Account ID", placeholder="e.g. admin1")
-            password = st.text_input("Security Passphrase", type="password", placeholder="********")
-            st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-            submit_login = st.form_submit_button("Authorize & Open Ledger", use_container_width=True)
-            st.markdown("</div>", unsafe_allow_html=True)
+            password = st.text_input("Security Passphrase", type="password", placeholder="••••••••")
+            submit_login = st.form_submit_button("Authorize & Open Ledger →")
+            
+            if submit_login:
+                if username in ["admin1", "admin2", "admin"] and password in ["admin123", "password123"]: 
+                    st.session_state['logged_in'] = True
+                    st.session_state['role'] = 'Admin'
+                    st.success("Access Granted!")
+                    st.rerun()
+                else:
+                    st.error("Invalid credentials, please try again.")
 
         if submit_login:
             # 1. MAIN MOTHER BRANCH (ADMIN)
