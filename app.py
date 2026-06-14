@@ -576,8 +576,8 @@ if st.session_state['role'] == "Admin":
             st.info("No active profiles tracked inside the database index.")
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # TAB 4: AUDIT HISTORY TRAILS & INVOICING EXPORTS
-    with tabs[3]:
+# TAB 4: AUDIT HISTORY TRAILS & INVOICING EXPORTS
+with tabs[3]:
         st.markdown("<div class='premium-card'><h3>Master Ledger Audit & Exports</h3>", unsafe_allow_html=True)
         st.markdown("<button onclick='window.print()' style='background: linear-gradient(135deg, #091a33 0%, #132e59 100%); color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px;'>🖨️ Export Financial Report to PDF</button>", unsafe_allow_html=True)
         
