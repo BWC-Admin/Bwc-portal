@@ -594,12 +594,12 @@ with tabs[3]:
         FROM contributions c
         LEFT JOIN members m ON c.member_code = m.member_code
         """
-    if selected_group != "All Groups":
-query += f" WHERE m.member_group = '{selected_group}'"
+        if selected_group != "All Groups":
+            query += f" WHERE m.member_group = '{selected_group}'"
         
-    query += " ORDER BY c.id DESC"
+        query += " ORDER BY c.id DESC"
     
-    df_audit = pd.read_sql_query(query, conn)
+        df_audit = pd.read_sql_query(query, conn)
     
     if not df_audit.empty:
         # Display the filtered dataframe table
