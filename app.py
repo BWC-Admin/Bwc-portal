@@ -582,7 +582,7 @@ with tabs[3]:
         st.markdown("<button onclick='window.print()' style='background: linear-gradient(135deg, #091a33 0%, #132e59 100%); color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px;'>🖨️ Export Financial Report to PDF</button>", unsafe_allow_html=True)
         
         # 1. Group Selector Filter Dropdown
-    selected_group = st.selectbox("🎯 Filter Ledger View By Group", ["All Groups", "Adom", "Second Chance"])
+            selected_group = st.selectbox("🎯 Filter Ledger View By Group", ["All Groups", "Adom", "Second Chance"])
     
     conn = get_db_connection()
     
