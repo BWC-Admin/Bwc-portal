@@ -584,7 +584,7 @@ with tabs[3]:
         # 1. Group Selector Filter Dropdown
         selected_group = st.selectbox("🎯 Filter Ledger View By Group", ["All Groups", "Adom", "Second Chance"])
     
-    conn = get_db_connection()
+        conn = get_db_connection()
     
     # 2. Build Query based on chosen group filter
     query = """
