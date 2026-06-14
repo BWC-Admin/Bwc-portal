@@ -594,9 +594,8 @@ with tabs[3]:
         FROM contributions c
         LEFT JOIN members m ON c.member_code = m.member_code
         """
-    
-        if selected_group != "All Groups":
-            query += f" WHERE m.member_group = '{selected_group}'"
+    if selected_group != "All Groups":
+query += f" WHERE m.member_group = '{selected_group}'"
         
     query += " ORDER BY c.id DESC"
     
