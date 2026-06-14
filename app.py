@@ -586,14 +586,14 @@ with tabs[3]:
     
         conn = get_db_connection()
     
-    # 2. Build Query based on chosen group filter
-    query = """
-        SELECT c.id as [Receipt ID], c.member_code as [Member Code], 
-        m.member_name as [Full Name], c.amount_paid as [Amount Paid (GH¢)],
-        m.member_group as [Group]
-        FROM contributions c
-        LEFT JOIN members m ON c.member_code = m.member_code
-    """
+       # 2. Build Query based on chosen group filter
+       query = """
+            SELECT c.id as [Receipt ID], c.member_code as [Member Code], 
+            m.member_name as [Full Name], c.amount_paid as [Amount Paid (GH¢)],
+            m.member_group as [Group]
+            FROM contributions c
+            LEFT JOIN members m ON c.member_code = m.member_code
+       """
     
     if selected_group != "All Groups":
         query += f" WHERE m.member_group = '{selected_group}'"
