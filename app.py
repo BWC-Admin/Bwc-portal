@@ -621,8 +621,8 @@ with tabs[3]:
                 st.rerun()
             except Exception as e:
                 st.error(f"Error handling deletion execution: {e}")
-    else:
-        st.info(f"No financial entries found in the database matching the '{selected_group}' matrix filter.")
+        else:
+            st.info(f"No financial entries found in the database matching the '{selected_group}' matrix filter.")
         
-    conn.close()
-    st.markdown("</div>", unsafe_allow_html=True)
+        conn.close()
+        st.markdown("</div>", unsafe_allow_html=True)
