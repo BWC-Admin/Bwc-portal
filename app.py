@@ -489,32 +489,29 @@ if st.session_state['role'] == "Admin":
                         # 4. Generate custom real-time alert logs
                         alert_count = 0
                         for member in group_members:
-                            m_name, m_phone = member[0], member[1]
-                            
-                            # Format custom dynamic message string cleanly without commas
-                            sms_text = (
-                                f"{{BWC PHILADELPHIA ({active_branch}), "
-                                f"NEW FUNERAL ALERT !!!!!!!!!, "
-                                f"ADOM OOOO!!! ({m_name}) "
-                                f"NEW FUNERAL UPDATE FOR ({fun_name}) OF GHC{float(fun_levy):.2f}, "
-                                f"(TOTAL FUNERAL BALANCE IS GHC{new_balance:.2f}), THANK YOU}}"
-                            )
-                            
-                            # 🚀 SENDING SMS TRIGGER
-                            try:
-                                # Clean the phone number: Remove '0' and prepend '233'
-                                clean_phone = str(m_phone).strip()
-                                if clean_phone.startswith('0'):
-                                    clean_phone = '233' + clean_phone[1:]
-                                    
-                                # FIX: Call 'send_arkesel_sms' instead of 'send_sms'
-                                # Ensure you pass your API_KEY and SENDER_ID if needed, or keep them empty to use secrets
-                                send_arkesel_sms(None, None, clean_phone, sms_text)
-                                
-                                st.toast(f"Notification sent to {m_name}", icon="✉️")
-                                alert_count += 1
-                            except Exception as e:
-                                st.error(f"Failed to send to {m_name}: {e}")
+    # 1. Calculate/Get the balance for this specific member
+    # (Assuming you have a way to get member_balance, like: member_balance = member['balance'])
+    
+    # 2. Define the sms_text INSIDE the loop so it uses the specific member's data
+    sms_text = (
+        f"BWC PHILADELPHIA ({active_branch}), "
+        f"NEW FUNERAL ALERT !!!!!!!!!, "
+        f"ADOM 0000!!! ({member['m_name']}) "
+        f"NEW FUNERAL UPDATE FOR ({fun_name}) OF GHC{float(fun_levy):.2f} "
+        f"(TOTAL FUNERAL BALANCE IS GHC{member['new_balance']:.2f}), THANK YOU"
+    )
+
+    # 3. Then send it
+    try:
+        clean_phone = str(member['m_phone']).strip()
+        if clean_phone.startswith('0'):
+            clean_phone = '233' + clean_phone[1:]
+        
+        send_arkesel_sms(None, None, clean_phone, sms_text)
+        st.toast(f"Notification sent to {member['m_name']}", icon="✉️")
+        alert_count += 1
+    except Exception as e:
+        st.error(f"Failed to send to {member['m_name']}: {e}")
                         st.success(f"Success: Processed updates and compiled alerts for {alert_count} '{fun_group}' members.")
                         
                     except Exception as alert_err:
