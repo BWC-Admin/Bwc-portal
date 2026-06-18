@@ -500,10 +500,14 @@ if st.session_state['role'] == "Admin":
                                 f"(TOTAL FUNERAL BALANCE IS GHC{new_balance:.2f}), THANK YOU}}"
                             )
                             
-                            # Prints processing records visually on screen for auditing
-                            st.toast(f"Notification prepared for {m_name}", icon="✉️")
-                            alert_count += 1
+                            # 🚀 SENDING SMS TRIGGER
+                        try:
+                            # Replace 'send_sms' with your exact function name if it differs
                             send_sms(m_phone, sms_text)
+                            st.toast(f"Notification sent to {m_name}", icon="✉️")
+                            alert_count += 1
+                        except Exception as e:
+                            st.error(f"Failed to send to {m_name}: {e}")
                             
                         st.success(f"Success: Processed updates and compiled alerts for {alert_count} '{fun_group}' members.")
                         
@@ -541,7 +545,6 @@ except Exception:
 if current_role == 'Admin':
     # Mother Branch pulls the entire global dataset
     df_m = pd.read_sql_query("SELECT * FROM members", conn)
-    st.write(df_m.columns.tolist())
     df_funerals = pd.read_sql_query("SELECT * FROM funerals", conn)
     df_contribs = pd.read_sql_query("SELECT * FROM contributions", conn)
 else:
@@ -803,4 +806,3 @@ with tabs[3]:
         
         conn.close()
         st.markdown("</div>", unsafe_allow_html=True)
-        st.write("DEBUG: Members table columns are:", pd.read_sql_query("SELECT * FROM members LIMIT 1", get_db_connection()).columns.tolist())
