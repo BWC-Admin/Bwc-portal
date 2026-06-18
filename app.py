@@ -43,7 +43,6 @@ st.markdown("""
         </button>
     </div>
 """, unsafe_allow_html=True)
-st.markdown(hide_style, unsafe_allow_html=True)
 # --- DATABASE ENGINE ---
 def get_db_connection():
     return sqlite3.connect("church_funeral.db")
