@@ -492,7 +492,7 @@ if st.session_state['role'] == "Admin":
                             # 1. Calculate/Get the balance for this specific member
                             # (Assuming you have a way to get member_balance, like: member_balance = member['balance'])
                             
-                            # 2. Define the sms_text INSIDE the loop so it uses the specific member's data
+                            # 2. Define the sms_text INSIDE the loop
                             sms_text = (
                                 f"BWC PHILADELPHIA ({active_branch}), "
                                 f"NEW FUNERAL ALERT !!!!!!!!!, "
