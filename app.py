@@ -502,16 +502,24 @@ if st.session_state['role'] == "Admin":
                             
                             # 🚀 SENDING SMS TRIGGER
                             try:
-                                # Clean the phone number: Remove '0' and prepend '233'
+                                # 1. Clean the number
                                 clean_phone = str(m_phone).strip()
                                 if clean_phone.startswith('0'):
                                     clean_phone = '233' + clean_phone[1:]
-                                    
-                                send_sms(clean_phone, sms_text)
-                                st.toast(f"Notification sent to {m_name}", icon="✉️")
+                                
+                                # 2. DEBUG: Show us exactly what is being sent
+                                st.write(f"Sending to: {clean_phone}")
+                                
+                                # 3. Call the function and capture the result
+                                response = send_sms(clean_phone, sms_text)
+                                
+                                # 4. Show the provider's response
+                                st.write(f"Provider Response: {response}")
+                                
                                 alert_count += 1
+                                
                             except Exception as e:
-                                st.error(f"Failed to send to {m_name}: {e}")
+                                st.error(f"Error: {e}")
                         st.success(f"Success: Processed updates and compiled alerts for {alert_count} '{fun_group}' members.")
                         
                     except Exception as alert_err:
