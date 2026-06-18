@@ -503,13 +503,13 @@ if st.session_state['role'] == "Admin":
                 st.toast(f"Notification prepared for {m_name}", icon="✉️")
                 alert_count += 1
                 
-            st.success(f"Success: Processed updates and compiled alerts for {alert_count} '{fun_group}' members.")
+                st.success(f"Success: Processed updates and compiled alerts for {alert_count} '{fun_group}' members.")
             
         except Exception as alert_err:
             st.warning(f"Ledger updated, but notifications failed to calculate: {alert_err}")
-            conn.commit()
-            conn.close()
-            st.rerun()
+        conn.commit()
+        conn.close()
+        st.rerun()
 
 st.sidebar.markdown("<br><h3 style='font-size:14px; color:#d4af37;'>🔱 ARKESEL TRANSMISSION ENGINE</h3>", unsafe_allow_html=True)
 default_key = st.secrets.get("ARKESEL_API_KEY", "")
