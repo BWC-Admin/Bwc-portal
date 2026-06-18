@@ -460,13 +460,14 @@ if st.session_state['role'] == "Admin":
                 
                 if st.form_submit_button("Publish Case"):
                     if fun_name:
-                        conn = get_db_connection()
-                        # This saves the funeral name, amount, and the group selection
-                        conn.execute(
-                            "INSERT INTO funerals (funeral_name, levy_amount, group_name) VALUES (?, ?, ?)",
-                            (fun_name, fun_levy, fun_group)
-                        )
-                        # --- AUTOMATED MEMBERS BALANCE CALCULATION & ALERTS ENGINE ---
+        conn = get_db_connection()
+        # This saves the funeral name, amount, and the group selection
+        conn.execute(
+            "INSERT INTO funerals (funeral_name, levy_amount, group_name) VALUES (?, ?, ?)",
+            (fun_name, fun_levy, fun_group)
+        )
+        
+        # --- AUTOMATED MEMBERS BALANCE CALCULATION & ALERTS ENGINE ---
         try:
             # 1. Fetch all previous funeral levies to calculate initial historical balance
             cursor = conn.cursor()
@@ -503,10 +504,11 @@ if st.session_state['role'] == "Admin":
                 st.toast(f"Notification prepared for {m_name}", icon="✉️")
                 alert_count += 1
                 
-                st.success(f"Success: Processed updates and compiled alerts for {alert_count} '{fun_group}' members.")
+            st.success(f"Success: Processed updates and compiled alerts for {alert_count} '{fun_group}' members.")
             
         except Exception as alert_err:
             st.warning(f"Ledger updated, but notifications failed to calculate: {alert_err}")
+
         conn.commit()
         conn.close()
         st.rerun()
