@@ -496,11 +496,11 @@ if st.session_state['role'] == "Admin":
                             sms_text = (
                                 f"BWC PHILADELPHIA ({active_branch}), "
                                 f"NEW FUNERAL ALERT !!!!!!!!!, "
-                                f"ADOM 0000!!! ({member['m_name']}) "
+                                f"ADOM 0000!!! ({m_name}) "
                                 f"NEW FUNERAL UPDATE FOR ({fun_name}) OF GHC{float(fun_levy):.2f} "
-                                f"(TOTAL FUNERAL BALANCE IS GHC{member['new_balance']:.2f}), THANK YOU"
+                                f"(TOTAL FUNERAL BALANCE IS GHC{new_balance:.2f}), THANK YOU"
                             )
-                        
+                                                
                             # 3. Then send it
                             try:
                                 clean_phone = str(member['m_phone']).strip()
