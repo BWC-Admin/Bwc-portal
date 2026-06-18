@@ -503,6 +503,7 @@ if st.session_state['role'] == "Admin":
                             # Prints processing records visually on screen for auditing
                             st.toast(f"Notification prepared for {m_name}", icon="✉️")
                             alert_count += 1
+                            send_sms(m_phone, sms_text)
                             
                         st.success(f"Success: Processed updates and compiled alerts for {alert_count} '{fun_group}' members.")
                         
