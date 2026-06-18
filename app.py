@@ -9,21 +9,33 @@ from datetime import datetime
 # --- HIDE STREAMLIT FORK & GITHUB BUTTONS ---
 hide_style = """
 <style>
-header {visibility: hidden;}
+/* 1. Hide unwanted native header branding items safely */
+[data-testid="stHeader"] > div:first-child {visibility: hidden;}
 footer {visibility: hidden;}
 .stDeployButton {display:none;}
 
-/* This brings back just the sidebar arrow button even if header is hidden */
-button[data-testid="collapsedSidebarCollapsedControl"] {
+/* 2. FORCE THE TOGGLE CONTROL TO BECOME A FLOATING ICON */
+div[data-testid="collapsedSidebarCollapsedControl"] {
     visibility: visible !important;
     display: flex !important;
-    background-color: #1e3a8a !important; /* Premium Blue background */
-    color: white !important; /* White arrow icon */
-    border-radius: 0 8px 8px 0 !important;
     position: fixed !important;
-    top: 10px !important;
-    left: 0 !important;
-    z-index: 999999 !important;
+    top: 15px !important;
+    left: 15px !important;
+    width: 45px !important;
+    height: 45px !important;
+    background-color: #1e3a8a !important; /* Premium Blue */
+    border-radius: 50% !important; /* Circular badge */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4) !important;
+    z-index: 9999999 !important;
+    cursor: pointer !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+/* 3. Force the arrow symbol itself to show up bright and sharp */
+div[data-testid="collapsedSidebarCollapsedControl"] button {
+    color: #ffffff !important;
+    transform: scale(1.3) !important;
 }
 </style>
 """
