@@ -452,66 +452,66 @@ if st.session_state['role'] == "Admin":
     st.sidebar.markdown("<br><h3 style='font-size:14px; color:#d4af37;'>⚙️ LEDGER CONTROL TOWER</h3>", unsafe_allow_html=True)
     with st.sidebar.expander("➕ Register Funeral Ledger Case", expanded=True):
         with st.form("funeral_form", clear_on_submit=True):
-        fun_name = st.text_input("Deceased Member Description")
-        fun_levy = st.number_input("Assessment Levy (GHS)", min_value=0.0, format="%.2f")
-        
-        # This dropdown allows you to separate Adom and Second Chance
-        fun_group = st.selectbox("Assign to Group", ["Adom", "Second Chance"])
+            fun_name = st.text_input("Deceased Member Description")
+            fun_levy = st.number_input("Assessment Levy (GHS)", min_value=0.0, format="%.2f")
+            
+            # This dropdown allows you to separate Adom and Second Chance
+            fun_group = st.selectbox("Assign to Group", ["Adom", "Second Chance"])
 
-        if st.form_submit_button("Publish Case"):
-            if fun_name:
-                conn = get_db_connection()
-                # This saves the funeral name, amount, and the group selection
-                conn.execute(
-                    "INSERT INTO funerals (funeral_name, levy_amount, group_name) VALUES (?, ?, ?)",
-                    (fun_name, fun_levy, fun_group)
-                )
-                
-                # --- AUTOMATED MEMBERS BALANCE CALCULATION & ALERTS ENGINE ---
-                try:
-                    # 1. Fetch all previous funeral levies to calculate initial historical balance
-                    cursor = conn.cursor()
-                    cursor.execute("SELECT SUM(levy_amount) FROM funerals WHERE group_name = ?", (fun_group,))
-                    result = cursor.fetchone()
+            if st.form_submit_button("Publish Case"):
+                if fun_name:
+                    conn = get_db_connection()
+                    # This saves the funeral name, amount, and the group selection
+                    conn.execute(
+                        "INSERT INTO funerals (funeral_name, levy_amount, group_name) VALUES (?, ?, ?)",
+                        (fun_name, fun_levy, fun_group)
+                    )
                     
-                    # The current case is already inserted, so previous balance subtracts it
-                    total_historical_with_new = result[0] if result[0] is not None else 0.0
-                    previous_balance = total_historical_with_new - float(fun_levy)
-                    new_balance = total_historical_with_new
-                    
-                    # 2. Get active branch context name from session state
-                    active_branch = st.session_state.get('branch', 'NUNGUA MAIN (Mother)')
-                    
-                    # 3. Pull all registered members from the target group roster
-                    cursor.execute("SELECT member_name, phone_number FROM members WHERE member_group = ?", (fun_group,))
-                    group_members = cursor.fetchall()
-                    
-                    # 4. Generate custom real-time alert logs
-                    alert_count = 0
-                    for member in group_members:
-                        m_name, m_phone = member[0], member[1]
+                    # --- AUTOMATED MEMBERS BALANCE CALCULATION & ALERTS ENGINE ---
+                    try:
+                        # 1. Fetch all previous funeral levies to calculate initial historical balance
+                        cursor = conn.cursor()
+                        cursor.execute("SELECT SUM(levy_amount) FROM funerals WHERE group_name = ?", (fun_group,))
+                        result = cursor.fetchone()
                         
-                        # Format custom dynamic message string cleanly
-                        sms_text = (
-                            f"{{BWC PHILADELPHIA ({active_branch}), "
-                            f"NEW FUNERAL ALERT !!!!!!!, "
-                            f"ADOM OOOO!!! ({m_name}) "
-                            f"NEW FUNERAL UPDATE FOR ({fun_name}) OF GHC{float(fun_levy):.2f}, "
-                            f"(TOTAL FUNERAL BALANCE IS GHC{new_balance:.2f}), THANK YOU}}"
-                        )
+                        # The current case is already inserted, so previous balance subtracts it
+                        total_historical_with_new = result[0] if result[0] is not None else 0.0
+                        previous_balance = total_historical_with_new - float(fun_levy)
+                        new_balance = total_historical_with_new
                         
-                        # Prints processing records visually on screen for auditing
-                        st.toast(f"Notification prepared for {m_name}", icon="✉️")
-                        alert_count += 1
+                        # 2. Get active branch context name from session state
+                        active_branch = st.session_state.get('branch', 'NUNGUA MAIN (Mother)')
                         
-                    st.success(f"Success: Processed updates and compiled alerts for {alert_count} '{fun_group}' members.")
-                    
-                except Exception as alert_err:
-                    st.warning(f"Ledger updated, but notifications failed to calculate: {alert_err}")
+                        # 3. Pull all registered members from the target group roster
+                        cursor.execute("SELECT member_name, phone_number FROM members WHERE member_group = ?", (fun_group,))
+                        group_members = cursor.fetchall()
+                        
+                        # 4. Generate custom real-time alert logs
+                        alert_count = 0
+                        for member in group_members:
+                            m_name, m_phone = member[0], member[1]
+                            
+                            # Format custom dynamic message string cleanly without commas
+                            sms_text = (
+                                f"{{BWC PHILADELPHIA ({active_branch}), "
+                                f"NEW FUNERAL ALERT !!!!!!!!!, "
+                                f"ADOM OOOO!!! ({m_name}) "
+                                f"NEW FUNERAL UPDATE FOR ({fun_name}) OF GHC{float(fun_levy):.2f}, "
+                                f"(TOTAL FUNERAL BALANCE IS GHC{new_balance:.2f}), THANK YOU}}"
+                            )
+                            
+                            # Prints processing records visually on screen for auditing
+                            st.toast(f"Notification prepared for {m_name}", icon="✉️")
+                            alert_count += 1
+                            
+                        st.success(f"Success: Processed updates and compiled alerts for {alert_count} '{fun_group}' members.")
+                        
+                    except Exception as alert_err:
+                        st.warning(f"Ledger updated, but notifications failed to calculate: {alert_err}")
 
-                conn.commit()
-                conn.close()
-                st.rerun()
+                    conn.commit()
+                    conn.close()
+                    st.rerun()
 
 st.sidebar.markdown("<br><h3 style='font-size:14px; color:#d4af37;'>🔱 ARKESEL TRANSMISSION ENGINE</h3>", unsafe_allow_html=True)
 default_key = st.secrets.get("ARKESEL_API_KEY", "")
