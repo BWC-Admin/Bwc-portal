@@ -541,6 +541,7 @@ except Exception:
 if current_role == 'Admin':
     # Mother Branch pulls the entire global dataset
     df_m = pd.read_sql_query("SELECT * FROM members", conn)
+    st.write(df_m.columns.tolist())
     df_funerals = pd.read_sql_query("SELECT * FROM funerals", conn)
     df_contribs = pd.read_sql_query("SELECT * FROM contributions", conn)
 else:
