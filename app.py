@@ -452,12 +452,12 @@ if st.session_state['role'] == "Admin":
     st.sidebar.markdown("<br><h3 style='font-size:14px; color:#d4af37;'>⚙️ LEDGER CONTROL TOWER</h3>", unsafe_allow_html=True)
     with st.sidebar.expander("➕ Register Funeral Ledger Case", expanded=True):
         with st.form("funeral_form", clear_on_submit=True):
-                fun_name = st.text_input("Deceased Member Description")
-                fun_levy = st.number_input("Assessment Levy (GHS)", min_value=0.0, format="%.2f")
-                
-                # This dropdown allows you to separate Adom and Second Chance
-                fun_group = st.selectbox("Assign to Group", ["Adom", "Second Chance"])
-                
+        fun_name = st.text_input("Deceased Member Description")
+        fun_levy = st.number_input("Assessment Levy (GHS)", min_value=0.0, format="%.2f")
+        
+        # This dropdown allows you to separate Adom and Second Chance
+        fun_group = st.selectbox("Assign to Group", ["Adom", "Second Chance"])
+
         if st.form_submit_button("Publish Case"):
             if fun_name:
                 conn = get_db_connection()
@@ -491,7 +491,7 @@ if st.session_state['role'] == "Admin":
                     for member in group_members:
                         m_name, m_phone = member[0], member[1]
                         
-                        # Format custom dynamic message string
+                        # Format custom dynamic message string cleanly
                         sms_text = (
                             f"{{BWC PHILADELPHIA ({active_branch}), "
                             f"NEW FUNERAL ALERT !!!!!!!, "
