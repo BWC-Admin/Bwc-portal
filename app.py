@@ -802,3 +802,4 @@ with tabs[3]:
         
         conn.close()
         st.markdown("</div>", unsafe_allow_html=True)
+        st.write("DEBUG: Members table columns are:", pd.read_sql_query("SELECT * FROM members LIMIT 1", get_db_connection()).columns.tolist())
