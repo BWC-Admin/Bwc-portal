@@ -8,12 +8,25 @@ from datetime import datetime
 
 # --- HIDE STREAMLIT FORK & GITHUB BUTTONS ---
 hide_style = """
-            <style>
-            header {visibility: hidden;}
-            footer {visibility: hidden;}
-            .stDeployButton {display:none;}
-            </style>
-            """
+<style>
+header {visibility: hidden;}
+footer {visibility: hidden;}
+.stDeployButton {display:none;}
+
+/* This brings back just the sidebar arrow button even if header is hidden */
+button[data-testid="collapsedSidebarCollapsedControl"] {
+    visibility: visible !important;
+    display: flex !important;
+    background-color: #1e3a8a !important; /* Premium Blue background */
+    color: white !important; /* White arrow icon */
+    border-radius: 0 8px 8px 0 !important;
+    position: fixed !important;
+    top: 10px !important;
+    left: 0 !important;
+    z-index: 999999 !important;
+}
+</style>
+"""
 st.markdown(hide_style, unsafe_allow_html=True)
 # --- DATABASE ENGINE ---
 def get_db_connection():
