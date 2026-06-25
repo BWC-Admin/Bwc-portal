@@ -814,7 +814,7 @@ with tabs[3]:
                 st.warning("Database records are currently unavailable.")
                 df_audit = pd.DataFrame() # Create empty DF to prevent downstream errors
             
-            if not df_audit.empty:
+        if not df_audit.empty:
                 # Display the filtered dataframe table
                 st.dataframe(df_audit, use_container_width=True)
         
