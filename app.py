@@ -14,14 +14,17 @@ def init_db():
     c.execute('''CREATE TABLE IF NOT EXISTS members 
                  (member_name TEXT, phone_number TEXT, branch_name TEXT, member_code TEXT, member_group TEXT)''')
     
-    # Ensure funerals table exists
+    # Ensure funerals table exists with the columns your query likely expects
     c.execute('''CREATE TABLE IF NOT EXISTS funerals 
-                 (id INTEGER PRIMARY KEY, funeral_name TEXT, levy_amount REAL, group_name TEXT)''')
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                  funeral_name TEXT, 
+                  levy_amount REAL, 
+                  group_name TEXT)''')
     
     conn.commit()
     conn.close()
 
-# Run the initialization
+# Always call this at the top of your script
 init_db()
 # --- CLEAN BRANDING HIDER ---
 st.markdown("""
