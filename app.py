@@ -810,7 +810,7 @@ with tabs[3]:
             else:
                 st.info("No records found in this category.")
                 
-            except Exception as e:
+        except Exception as e:
                 st.warning("Database records are currently unavailable.")
                 df_audit = pd.DataFrame() # Create empty DF to prevent downstream errors
             
