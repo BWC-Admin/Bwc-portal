@@ -800,10 +800,10 @@ with tabs[3]:
     
         # Replaces the old pd.read_sql_query line
         try:
-        df_audit = pd.read_sql_query(query, conn)
+            df_audit = pd.read_sql_query(query, conn)
         except Exception as e:
-        st.warning("Database records are currently unavailable. Please check your data source.")
-        df_audit = pd.DataFrame()
+            st.warning("Database records are currently unavailable. Please check your data source.")
+            df_audit = pd.DataFrame()
     
         if not df_audit.empty:
             # Display the filtered dataframe table
