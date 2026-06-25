@@ -693,44 +693,40 @@ if st.session_state['role'] == "Admin":
                     "BURMA CAMP"
                 ])
                 
-            uploaded_file = st.file_uploader(f"Upload {upload_group} Excel Spreadsheet ({upload_branch})", type=["xlsx"])
-            
-            if uploaded_file is not None:
-                try:
-                    df_upload = pd.read_excel(uploaded_file)
-                    
-                    # Clean column names (handles spaces and casing)
-                    df_upload.columns = [str(c).strip().lower().replace(" ", "_") for c in df_upload.columns]
-                    
-                    # Rename columns to match your database exactly
-                    df_upload = df_upload.rename(columns={
-                        'member_id': 'member_code', 
-                        'id': 'member_code', 
-                        'code': 'member_code',
-                        'name': 'member_name', 
-                        'phone': 'phone_number', 
-                        'phone_no': 'phone_number'
-                    })
-                    
-                    # Tag every member in this file with the selected group and branch
-                    df_upload['member_group'] = upload_group
-                    df_upload['branch_name'] = upload_branch
-                    
-                    conn = get_db_connection()
-                    
-                    # Remove only the existing records for THIS branch and THIS group to avoid duplicates
-                    conn.execute("DELETE FROM members WHERE member_group = ? AND branch_name = ?", (upload_group, upload_branch))
-                    
-                    # Save the new data
-                    df_upload.to_sql("members", conn, if_exists="append", index=False)
-                    conn.commit()
-                    conn.close()
-                    
-                    st.success(f"🟢 {upload_group} roster for {upload_branch} synchronized perfectly!")
-                    st.rerun()
-                    
-                except Exception as e:
-                    st.error(f"🔴 Spreadsheet compilation error: {e}")
+            import sqlite3
+
+# 1. Ensure you have your connection function defined at the top of your app
+def get_db_connection():
+    # Make sure this matches the filename you used for your database
+    return sqlite3.connect("church_database.db", check_same_thread=False)
+
+# 2. This is the replacement block to put in place of your file_uploader logic:
+st.subheader("Add New Member to Database")
+
+with st.form("manual_entry_form"):
+    col1, col2 = st.columns(2)
+    with col1:
+        m_name = st.text_input("Member Name")
+        m_phone = st.text_input("Phone Number")
+    with col2:
+        m_branch = st.selectbox("Branch", ["NUNGUA MAIN", "LASHIBI", "TESHIE", "LABADI", "BURMA CAMP"])
+        m_group = st.text_input("Group Name")
+    
+    m_code = st.text_input("Member Code")
+    
+    submitted = st.form_submit_button("Save Member")
+    
+    if submitted:
+        conn = get_db_connection()
+        # Use the columns that match your existing database table
+        conn.execute("""
+            INSERT INTO members (member_name, phone_number, branch_name, member_code, member_group) 
+            VALUES (?, ?, ?, ?, ?)
+        """, (m_name, m_phone, m_branch, m_code, m_group))
+        conn.commit()
+        conn.close()
+        st.success("Member saved permanently to the database!")
+        st.rerun()
             
             st.markdown("</div>", unsafe_allow_html=True)
 
