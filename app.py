@@ -807,16 +807,16 @@ with tabs[3]:
         # Check if the dataframe is empty or missing the expected column
             if not df_audit.empty and "Receipt ID" in df_audit.columns:
                 st.dataframe(df_audit, use_container_width=True)
-        else:
-            st.info("No records found in this category.")
+            else:
+                st.info("No records found in this category.")
+                
+            except Exception as e:
+                st.warning("Database records are currently unavailable.")
+                df_audit = pd.DataFrame() # Create empty DF to prevent downstream errors
             
-        except Exception as e:
-            st.warning("Database records are currently unavailable.")
-            df_audit = pd.DataFrame() # Create empty DF to prevent downstream errors
-        
-        if not df_audit.empty:
-            # Display the filtered dataframe table
-            st.dataframe(df_audit, use_container_width=True)
+            if not df_audit.empty:
+                # Display the filtered dataframe table
+                st.dataframe(df_audit, use_container_width=True)
         
         st.markdown("---")
         ### 🛠️ ADMINISTRATIVE DELETION DESK ###
