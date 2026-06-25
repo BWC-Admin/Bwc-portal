@@ -728,7 +728,7 @@ with st.form("manual_entry_form"):
         st.success("Member saved permanently to the database!")
         st.rerun()
             
-            st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
     # TAB 3: FUNERAL CASE MANAGEMENT (EDIT/DELETE DESK)
     with tabs[2]:
