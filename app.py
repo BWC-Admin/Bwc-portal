@@ -6,6 +6,23 @@ import base64
 import requests
 from datetime import datetime
 
+# --- DATABASE INITIALIZATION ---
+def init_db():
+    conn = sqlite3.connect("church_database.db")
+    c = conn.cursor()
+    # Ensure members table exists
+    c.execute('''CREATE TABLE IF NOT EXISTS members 
+                 (member_name TEXT, phone_number TEXT, branch_name TEXT, member_code TEXT, member_group TEXT)''')
+    
+    # Ensure funerals table exists
+    c.execute('''CREATE TABLE IF NOT EXISTS funerals 
+                 (id INTEGER PRIMARY KEY, funeral_name TEXT, levy_amount REAL, group_name TEXT)''')
+    
+    conn.commit()
+    conn.close()
+
+# Run the initialization
+init_db()
 # --- CLEAN BRANDING HIDER ---
 st.markdown("""
 <style>
