@@ -823,7 +823,12 @@ with tabs[3]:
         st.markdown("### 🗑️ Void / Delete a Receipt Record")
         
         # Pull list of active receipt IDs for selection drop down
-        receipt_list = df_audit["Receipt ID"].tolist()
+        if "Receipt ID" in df_audit.columns:
+            receipt_list = df_audit["Receipt ID"].tolist()
+        else:
+            receipt_list = []
+        
+    receipt_to_delete = st.selectbox("Select Receipt ID to permanently remove:", receipt_list)
         receipt_to_delete = st.selectbox("Select Receipt ID to permanently remove:", receipt_list)
         
         if st.button("❌ Confirm Permanent Deletion", type="primary"):
