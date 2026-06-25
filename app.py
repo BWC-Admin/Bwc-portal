@@ -799,9 +799,9 @@ with tabs[3]:
         query += " ORDER BY c.id DESC"
     
         # Replaces the old pd.read_sql_query line
-    try:
+        try:
         df_audit = pd.read_sql_query(query, conn)
-    except Exception as e:
+        except Exception as e:
         st.warning("Database records are currently unavailable. Please check your data source.")
         df_audit = pd.DataFrame()
     
