@@ -828,8 +828,8 @@ with tabs[3]:
         else:
             receipt_list = []
         
-    receipt_to_delete = st.selectbox("Select Receipt ID to permanently remove:", receipt_list)
         receipt_to_delete = st.selectbox("Select Receipt ID to permanently remove:", receipt_list)
+            receipt_to_delete = st.selectbox("Select Receipt ID to permanently remove:", receipt_list)
         
         if st.button("❌ Confirm Permanent Deletion", type="primary"):
             try:
