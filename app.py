@@ -805,7 +805,7 @@ with tabs[3]:
             conn.close()
 
         # Check if the dataframe is empty or missing the expected column
-        if not df_audit.empty and "Receipt ID" in df_audit.columns:
+            if not df_audit.empty and "Receipt ID" in df_audit.columns:
             st.dataframe(df_audit, use_container_width=True)
         else:
             st.info("No records found in this category.")
