@@ -721,23 +721,28 @@ def get_db_connection():
     return sqlite3.connect("church_database.db", check_same_thread=False)
 
 # 2. This is the replacement block to put in place of your file_uploader logic:
-st.subheader("Add New Member to Database")
-
-with st.form("manual_entry_form"):
-    col1, col2 = st.columns(2)
-    with col1:
-        m_name = st.text_input("Member Name")
-        m_phone = st.text_input("Phone Number")
-    with col2:
-        m_branch = st.selectbox("Branch", ["NUNGUA MAIN", "LASHIBI", "TESHIE", "LABADI", "BURMA CAMP"])
-        m_group = st.text_input("Group Name")
+# Place this inside the tab where you want the form
+with tab2: # Change 'tab2' to whichever tab number corresponds to 'Roster Synchronization'
+    st.subheader("ADD NEW MEMBER TO DATABASE")
     
-    m_code = st.text_input("Member Code")
-    
-    submitted = st.form_submit_button("Save Member")
+    # This form now only exists inside this specific tab
+    with st.form("manual_entry_form", clear_on_submit=True):
+        col1, col2 = st.columns(2)
+        with col1:
+            m_name = st.text_input("Member Name")
+            m_phone = st.text_input("Phone Number")
+        with col2:
+            m_branch = st.selectbox("Branch", ["NUNGUA MAIN", "LASHIBI", "TESHIE", "LABADI", "BURMA CAMP"])
+            m_group = st.text_input("Group Name")
+        m_code = st.text_input("Member Code")
+        
+        submitted = st.form_submit_button("Save Member")
     
     if submitted:
         conn = get_db_connection()
+        # Ensure your existing database insertion logic is indented under here
+        # ... your save code ...
+        conn.close()
         # Use the columns that match your existing database table
         conn.execute("""
             INSERT INTO members (member_name, phone_number, branch_name, member_code, member_group) 
