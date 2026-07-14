@@ -722,10 +722,9 @@ def get_db_connection():
 
 # 2. This is the replacement block to put in place of your file_uploader logic:
 # Place this inside the tab where you want the form
-with tab2: # Change 'tab2' to whichever tab number corresponds to 'Roster Synchronization'
+with tab2:
     st.subheader("ADD NEW MEMBER TO DATABASE")
     
-    # This form now only exists inside this specific tab
     with st.form("manual_entry_form", clear_on_submit=True):
         col1, col2 = st.columns(2)
         with col1:
@@ -740,6 +739,8 @@ with tab2: # Change 'tab2' to whichever tab number corresponds to 'Roster Synchr
     
     if submitted:
         conn = get_db_connection()
+        # Your existing save logic goes here
+        conn.close()
         # Ensure your existing database insertion logic is indented under here
         # ... your save code ...
         conn.close()
