@@ -722,8 +722,8 @@ def get_db_connection():
 
 # 2. This is the replacement block to put in place of your file_uploader logic:
 # Place this inside the tab where you want the form
-with tab2:
-    st.subheader("ADD NEW MEMBER TO DATABASE")
+    with tab2:
+        st.subheader("ADD NEW MEMBER TO DATABASE")
     
     with st.form("manual_entry_form", clear_on_submit=True):
         col1, col2 = st.columns(2)
