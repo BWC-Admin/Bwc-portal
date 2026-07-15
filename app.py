@@ -720,28 +720,35 @@ if st.session_state['role'] == "Admin":
             
             # This uploader uses the values from the dropdowns above
             uploaded_file = st.file_uploader(f"Upload Excel for {upload_group} - {upload_branch}", type=["xlsx", "csv"])
+            # Ensure this is indented under 'with tabs[1]:'
+    uploaded_file = st.file_uploader(f"Upload Excel for {upload_group} - {upload_branch}", type=["xlsx", "csv"])
+    
+    if uploaded_file is not None:
+        try:
+            # 1. Read the Excel file
+            df_new = pd.read_excel(uploaded_file)
             
-            if uploaded_file is not None:
-                st.success(f"Ready to process file for {upload_group} at {upload_branch}!")
-            if uploaded_file is not None:
-                st.success(f"Processing file for {upload_group} at {upload_branch}...")
-                    
-                # 1. Read the Excel file
-                df_new = pd.read_excel(uploaded_file)
-                
-                # 2. Add the Branch and Group columns 
-                df_new['branch_name'] = upload_branch
-                df_new['group_name'] = upload_group
-                    
-                # 3. Save to database
-                conn = get_db_connection()
-                df_new.to_sql('members', conn, if_exists='append', index=False)
-                conn.close()
-                    
-                st.success("Database updated successfully!")
-                st.rerun() # This will refresh the page and fix the '0 PROFILES' count     
-               
-
+            # 2. Add the Branch and Group columns 
+            df_new['branch_name'] = upload_branch
+            df_new['group_name'] = upload_group
+            
+            # 3. CRITICAL: Only keep columns that the database expects 
+            # Modify these names to match your EXACT database column names
+            # You can see your column names by looking at where you defined your table
+            required_columns = ['member_code', 'member_name', 'phone_number', 'branch_name', 'group_name']
+            df_new = df_new[[col for col in required_columns if col in df_new.columns]]
+            
+            # 4. Save to database
+            conn = get_db_connection()
+            df_new.to_sql('members', conn, if_exists='append', index=False)
+            conn.close()
+            
+            st.success(f"Successfully synced {len(df_new)} members to {upload_branch}!")
+            st.rerun()
+            
+        except Exception as e:
+            st.error(f"Error processing file: {e}")
+            st.write("Please ensure your Excel column names match the system requirements.")
     # TAB 3: FUNERAL CASE MANAGEMENT (EDIT/DELETE DESK)
     with tabs[2]:
         st.markdown("<div class='premium-card'><h3>Active Philadelphia Case Profiles</h3>", unsafe_allow_html=True)
