@@ -25,7 +25,7 @@ def init_db():
                   group_name TEXT)''')
     
     # 3. ADD THIS: Ensure payments table exists to track history
-    c.execute('''CREATE TABLE IF NOT EXISTS payments 
+    c.execute('''CREATE TABLE IF NOT EXISTS contributions 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
                   phone_number TEXT,
                   amount_paid REAL,
