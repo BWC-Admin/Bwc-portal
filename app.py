@@ -618,13 +618,7 @@ else:
 
 # --- TAB 1: RECEIPT ENTRY DESK ---
 with tabs[0]:
-    # --- ADD THIS UPLOADER CODE HERE ---
-    st.header("Excel Upload")
-    uploaded_file = st.file_uploader("Upload Contribution Excel", type=["xlsx", "csv"])
-    
-    if uploaded_file is not None:
-        st.write("File uploaded successfully!")
-    
+   
     # --- KEEP YOUR EXISTING CODE BELOW THIS ---
     kpi1, kpi2, kpi3 = st.columns(3)
     kpi1.markdown(f"<div style='background: white; padding: 20px; border-radius: 12px; border-left: 4px solid #091a33; box-shadow: 0 4px 15px rgba(0,0,0,0.02);'><b>Congregation Size</b><h2 style='margin:0; color:#091a33;'>{member_count} Profiles</h2></div>", unsafe_allow_html=True)
@@ -706,6 +700,13 @@ with tabs[0]:
 if st.session_state['role'] == "Admin":
     # TAB 2: ROSTER WORKBOOK INGESTION
     with tabs[1]:
+             # --- ADD THIS UPLOADER CODE HERE ---
+            st.header("Excel Upload")
+            uploaded_file = st.file_uploader("Upload Contribution Excel", type=["xlsx", "csv"])
+            
+            if uploaded_file is not None:
+                st.write("File uploaded successfully!")
+            
             st.markdown("<div class='premium-card'><h3>👥 Roster Synchronization Desk</h3></div>", unsafe_allow_html=True)
             
             # Selectors for Group and Branch tracking
