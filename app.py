@@ -720,8 +720,7 @@ if st.session_state['role'] == "Admin":
             
             # This uploader uses the values from the dropdowns above
             uploaded_file = st.file_uploader(f"Upload Excel for {upload_group} - {upload_branch}", type=["xlsx", "csv"])
-            # Ensure this is indented under 'with tabs[1]:'
-    uploaded_file = st.file_uploader(f"Upload Excel for {upload_group} - {upload_branch}", type=["xlsx", "csv"])
+            
     
     if uploaded_file is not None:
         try:
