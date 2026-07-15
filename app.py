@@ -713,48 +713,7 @@ if st.session_state['role'] == "Admin":
                     "BURMA CAMP"
                 ])
                 
-            import sqlite3
-
-# 1. Ensure you have your connection function defined at the top of your app
-def get_db_connection():
-    # Make sure this matches the filename you used for your database
-    return sqlite3.connect("church_database.db", check_same_thread=False)
-
-# 2. This is the replacement block to put in place of your file_uploader logic:
-# Place this inside the tab where you want the form
-    with tab2:
-        st.subheader("ADD NEW MEMBER TO DATABASE")
-    
-    with st.form("manual_entry_form", clear_on_submit=True):
-        col1, col2 = st.columns(2)
-        with col1:
-            m_name = st.text_input("Member Name")
-            m_phone = st.text_input("Phone Number")
-        with col2:
-            m_branch = st.selectbox("Branch", ["NUNGUA MAIN", "LASHIBI", "TESHIE", "LABADI", "BURMA CAMP"])
-            m_group = st.text_input("Group Name")
-        m_code = st.text_input("Member Code")
-        
-        submitted = st.form_submit_button("Save Member")
-    
-    if submitted:
-        conn = get_db_connection()
-        # Your existing save logic goes here
-        conn.close()
-        # Ensure your existing database insertion logic is indented under here
-        # ... your save code ...
-        conn.close()
-        # Use the columns that match your existing database table
-        conn.execute("""
-            INSERT INTO members (member_name, phone_number, branch_name, member_code, member_group) 
-            VALUES (?, ?, ?, ?, ?)
-        """, (m_name, m_phone, m_branch, m_code, m_group))
-        conn.commit()
-        conn.close()
-        st.success("Member saved permanently to the database!")
-        st.rerun()
-            
-    st.markdown("</div>", unsafe_allow_html=True)
+       
 
     # TAB 3: FUNERAL CASE MANAGEMENT (EDIT/DELETE DESK)
     with tabs[2]:
