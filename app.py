@@ -684,43 +684,43 @@ with tabs[0]:
         with st.form("payment_form", clear_on_submit=True):
             cash_amount = st.number_input("Amount Deposited Today (GH₵)", min_value=0.0, format="%.2f")
             if st.form_submit_button("Post Transaction Receipt") and cash_amount > 0:
-            try:
-                # 1. Open connection
-                conn = get_db_connection()
-                
-                # 2. Insert payment
-                conn.execute("INSERT INTO contributions (member_code, amount_paid) VALUES (?, ?)", (m_code, cash_amount))
-                conn.commit()
-    
-                # 3. Get fresh totals
-                sum_res = conn.execute("SELECT SUM(amount_paid) FROM contributions WHERE TRIM(CAST(member_code AS TEXT)) = ?", (str(m_code).strip(),)).fetchone()
-                total_paid_now = sum_res[0] if sum_res and sum_res[0] is not None else 0
-                
-                # 4. Calculate balance
-                final_balance = float(total_req_levy) - float(total_paid_now)
-                
-                # 5. Build message
-                sms_message = f"BWC Philadelphia: Hello {m_name}, we have acknowledged your contribution of GHC{cash_amount:.2f}. Total Paid: GHC{total_paid_now:.2f}. Balance: GHC{final_balance:.2f}. God bless you."
-                
-                conn.close() # Close after calculations
-    
-                # 6. Send SMS
-                if st.session_state.get('role') == "Admin" and sms_toggle:
-                    if ark_api_key:
-                        api_response = send_arkesel_sms(ark_api_key, ark_sender_id, m_phone, sms_message)
-                        st.success("✅ Ledger updated and SMS sent!")
+                try:
+                    # 1. Open connection
+                    conn = get_db_connection()
+                    
+                    # 2. Insert payment
+                    conn.execute("INSERT INTO contributions (member_code, amount_paid) VALUES (?, ?)", (m_code, cash_amount))
+                    conn.commit()
+        
+                    # 3. Get fresh totals
+                    sum_res = conn.execute("SELECT SUM(amount_paid) FROM contributions WHERE TRIM(CAST(member_code AS TEXT)) = ?", (str(m_code).strip(),)).fetchone()
+                    total_paid_now = sum_res[0] if sum_res and sum_res[0] is not None else 0
+                    
+                    # 4. Calculate balance
+                    final_balance = float(total_req_levy) - float(total_paid_now)
+                    
+                    # 5. Build message
+                    sms_message = f"BWC Philadelphia: Hello {m_name}, we have acknowledged your contribution of GHC{cash_amount:.2f}. Total Paid: GHC{total_paid_now:.2f}. Balance: GHC{final_balance:.2f}. God bless you."
+                    
+                    conn.close() # Close after calculations
+        
+                    # 6. Send SMS
+                    if st.session_state.get('role') == "Admin" and sms_toggle:
+                        if ark_api_key:
+                            api_response = send_arkesel_sms(ark_api_key, ark_sender_id, m_phone, sms_message)
+                            st.success("✅ Ledger updated and SMS sent!")
+                        else:
+                            st.error("❌ Key mismatch error on Admin configuration module.")
                     else:
-                        st.error("❌ Key mismatch error on Admin configuration module.")
-                else:
-                    st.info(f"Transaction Log: {sms_message}")
+                        st.info(f"Transaction Log: {sms_message}")
+                        
+                    st.rerun() # Refresh to update the totals on screen
+        
+                except Exception as e:
+                    st.error(f"Error: {e}")
+                        
                     
-                st.rerun() # Refresh to update the totals on screen
-    
-            except Exception as e:
-                st.error(f"Error: {e}")
                     
-                
-                
 
 # --- ADMINISTRATIVE MODULES ---
 if st.session_state['role'] == "Admin":
