@@ -618,6 +618,14 @@ else:
 
 # --- TAB 1: RECEIPT ENTRY DESK ---
 with tabs[0]:
+    # --- ADD THIS UPLOADER CODE HERE ---
+    st.header("Excel Upload")
+    uploaded_file = st.file_uploader("Upload Contribution Excel", type=["xlsx", "csv"])
+    
+    if uploaded_file is not None:
+        st.write("File uploaded successfully!")
+    
+    # --- KEEP YOUR EXISTING CODE BELOW THIS ---
     kpi1, kpi2, kpi3 = st.columns(3)
     kpi1.markdown(f"<div style='background: white; padding: 20px; border-radius: 12px; border-left: 4px solid #091a33; box-shadow: 0 4px 15px rgba(0,0,0,0.02);'><b>Congregation Size</b><h2 style='margin:0; color:#091a33;'>{member_count} Profiles</h2></div>", unsafe_allow_html=True)
     kpi2.markdown(f"<div style='background: white; padding: 20px; border-radius: 12px; border-left: 4px solid #d4af37; box-shadow: 0 4px 15px rgba(0,0,0,0.02);'><b>Tracked Events</b><h2 style='margin:0; color:#d4af37;'>{funeral_count} Events</h2></div>", unsafe_allow_html=True)
