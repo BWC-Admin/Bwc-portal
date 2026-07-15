@@ -746,7 +746,7 @@ if st.session_state['role'] == "Admin":
             st.rerun()
             
         except Exception as e:
-            st.error(f"Error processing file: {e}")
+            st.error(f"Actual error: {e}")
             st.write("Please ensure your Excel column names match the system requirements.")
     # TAB 3: FUNERAL CASE MANAGEMENT (EDIT/DELETE DESK)
     with tabs[2]:
