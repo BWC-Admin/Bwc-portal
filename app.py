@@ -700,13 +700,7 @@ with tabs[0]:
 if st.session_state['role'] == "Admin":
     # TAB 2: ROSTER WORKBOOK INGESTION
     with tabs[1]:
-             # --- ADD THIS UPLOADER CODE HERE ---
-            st.header("Excel Upload")
-            uploaded_file = st.file_uploader("Upload Contribution Excel", type=["xlsx", "csv"])
-            
-            if uploaded_file is not None:
-                st.write("File uploaded successfully!")
-            
+             
             st.markdown("<div class='premium-card'><h3>👥 Roster Synchronization Desk</h3></div>", unsafe_allow_html=True)
             
             # Selectors for Group and Branch tracking
@@ -721,8 +715,16 @@ if st.session_state['role'] == "Admin":
                     "LABADI", 
                     "BURMA CAMP"
                 ])
-                
-       
+           # --- INSERT THIS CODE HERE ---
+        st.markdown("---") # Adds a visual separator
+        
+        # This uploader uses the values from the dropdowns above
+        uploaded_file = st.file_uploader(f"Upload Excel for {upload_group} - {upload_branch}", type=["xlsx", "csv"])
+        
+        if uploaded_file is not None:
+            st.success(f"Ready to process file for {upload_group} at {upload_branch}!")
+            # Add your file processing logic (e.g., df = pd.read_excel(uploaded_file)) here     
+           
 
     # TAB 3: FUNERAL CASE MANAGEMENT (EDIT/DELETE DESK)
     with tabs[2]:
