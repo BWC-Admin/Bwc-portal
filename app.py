@@ -739,7 +739,7 @@ if st.session_state['role'] == "Admin":
             
             # 4. Save to database
             conn = get_db_connection()
-            df_new.to_sql('members', conn, if_exists='append', index=False)
+            df_new.to_sql('members', conn, if_exists='replace', index=False)
             conn.close()
             
             st.success(f"Successfully synced {len(df_new)} members to {upload_branch}!")
