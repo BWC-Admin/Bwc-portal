@@ -716,15 +716,15 @@ if st.session_state['role'] == "Admin":
                     "BURMA CAMP"
                 ])
            # --- INSERT THIS CODE HERE ---
-        st.markdown("---") # Adds a visual separator
-        
-        # This uploader uses the values from the dropdowns above
-        uploaded_file = st.file_uploader(f"Upload Excel for {upload_group} - {upload_branch}", type=["xlsx", "csv"])
-        
-        if uploaded_file is not None:
-            st.success(f"Ready to process file for {upload_group} at {upload_branch}!")
-            # Add your file processing logic (e.g., df = pd.read_excel(uploaded_file)) here     
-           
+            st.markdown("---") # Adds a visual separator
+            
+            # This uploader uses the values from the dropdowns above
+            uploaded_file = st.file_uploader(f"Upload Excel for {upload_group} - {upload_branch}", type=["xlsx", "csv"])
+            
+            if uploaded_file is not None:
+                st.success(f"Ready to process file for {upload_group} at {upload_branch}!")
+                # Add your file processing logic (e.g., df = pd.read_excel(uploaded_file)) here     
+               
 
     # TAB 3: FUNERAL CASE MANAGEMENT (EDIT/DELETE DESK)
     with tabs[2]:
