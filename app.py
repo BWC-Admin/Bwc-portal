@@ -7,23 +7,32 @@ import requests
 from datetime import datetime
 
 # --- DATABASE INITIALIZATION ---
+import sqlite3
+
 def init_db():
     conn = sqlite3.connect("church_database.db")
     c = conn.cursor()
-    # Ensure members table exists
+    
+    # 1. Ensure members table exists
     c.execute('''CREATE TABLE IF NOT EXISTS members 
                  (member_name TEXT, phone_number TEXT, branch_name TEXT, member_code TEXT, member_group TEXT)''')
     
-    # Ensure funerals table exists with the columns your query likely expects
+    # 2. Ensure funerals table exists
     c.execute('''CREATE TABLE IF NOT EXISTS funerals 
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                  funeral_name TEXT, 
-                  levy_amount REAL, 
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  funeral_name TEXT,
+                  levy_amount REAL,
                   group_name TEXT)''')
+    
+    # 3. ADD THIS: Ensure payments table exists to track history
+    c.execute('''CREATE TABLE IF NOT EXISTS payments 
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  phone_number TEXT,
+                  amount_paid REAL,
+                  funeral_name TEXT)''')
     
     conn.commit()
     conn.close()
-
 # Always call this at the top of your script
 init_db()
 # --- CLEAN BRANDING HIDER ---
@@ -676,13 +685,21 @@ with tabs[0]:
             cash_amount = st.number_input("Amount Deposited Today (GH₵)", min_value=0.0, format="%.2f")
             if st.form_submit_button("Post Transaction Receipt") and cash_amount > 0:
                 conn = get_db_connection()
+                # 1. Save the new payment
                 conn.execute("INSERT INTO contributions (member_code, amount_paid) VALUES (?, ?)", (m_code, cash_amount))
-                conn.commit(); conn.close()
+                conn.commit()
+            
+                # 2. FORCE a fresh calculation of the total from the database
+                # This ensures we get the sum including the deposit we just made
+                sum_res = conn.execute("SELECT SUM(amount_paid) FROM contributions WHERE TRIM(CAST(member_code AS TEXT)) = ?", (str(m_code).strip(),)).fetchone()
+                total_paid_now = sum_res[0] if sum_res and sum_res[0] is not None else 0
                 
-                updated_paid = already_paid + cash_amount
-                updated_balance = total_req_levy - updated_paid
-                
-                sms_message = f"BWC Philadelphia: Hello {m_name}, we have acknowledged your contribution of GH₵{cash_amount:,.2f}. Total Paid: GH₵{updated_paid:,.2f}. Balance: GH₵{updated_balance:,.2f}. God bless you."
+                # 3. Calculate the balance
+                final_balance = float(total_req_levy) - float(total_paid_now)
+                conn.close()
+            
+                # 4. Construct the message using these fresh numbers
+                sms_message = f"BWC Philadelphia: Hello {m_name}, we have acknowledged your contribution of GHC{cash_amount:.2f}. Total Paid: GHC{total_paid_now:.2f}. Balance: GHC{final_balance:.2f}. God bless you."
                 st.success(f"🎉 Secure ledger update successful for {m_name}!")
                 
                 if st.session_state['role'] == "Admin" and sms_toggle:
