@@ -723,7 +723,23 @@ if st.session_state['role'] == "Admin":
             
             if uploaded_file is not None:
                 st.success(f"Ready to process file for {upload_group} at {upload_branch}!")
-                # Add your file processing logic (e.g., df = pd.read_excel(uploaded_file)) here     
+                if uploaded_file is not None:
+                    st.success(f"Processing file for {upload_group} at {upload_branch}...")
+                    
+                    # 1. Read the Excel file
+                    df_new = pd.read_excel(uploaded_file)
+                    
+                    # 2. Add the Branch and Group columns 
+                    df_new['branch_name'] = upload_branch
+                    df_new['group_name'] = upload_group
+                    
+                    # 3. Save to database
+                    conn = get_db_connection()
+                    df_new.to_sql('members', conn, if_exists='append', index=False)
+                    conn.close()
+                    
+                    st.success("Database updated successfully!")
+                    st.rerun() # This will refresh the page and fix the '0 PROFILES' count     
                
 
     # TAB 3: FUNERAL CASE MANAGEMENT (EDIT/DELETE DESK)
